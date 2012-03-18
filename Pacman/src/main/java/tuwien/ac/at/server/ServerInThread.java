@@ -3,7 +3,7 @@
  * 
  */
 
-package server;
+package main.java.tuwien.ac.at.server;
 
 import java.net.*;
 import java.io.*;

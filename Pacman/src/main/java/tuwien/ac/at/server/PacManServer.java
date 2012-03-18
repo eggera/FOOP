@@ -5,13 +5,13 @@
  */
 
 
-package server;
+package main.java.tuwien.ac.at.server;
 
 import java.io.IOException;
 import java.net.*;
 
 
-public class Server {
+public class PacManServer {
 
 	public static final String SERVER_ADRESS = "127.0.0.1";
 	public static final int SERVER_PORT = 10000;

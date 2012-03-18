@@ -4,7 +4,7 @@
  * It is then send periodically to the clients (UDP Multicast)?
  */
 
-package server;
+package main.java.tuwien.ac.at.server;
 
 public class ServerOutThread implements Runnable {
 
