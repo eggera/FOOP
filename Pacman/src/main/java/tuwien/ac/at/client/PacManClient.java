@@ -1,9 +1,8 @@
 package main.java.tuwien.ac.at.client;
 
-import main.java.tuwien.ac.at.gui.Window;
+import main.java.tuwien.ac.at.client.gui.Window;
+import main.java.tuwien.ac.at.game.Game1;
 
-import main.java.tuwien.ac.at.gui.field.GameField;
-import main.java.tuwien.ac.at.gui.field.GameFieldLevel1;
 import main.java.tuwien.ac.at.server.PacManServer;
 
 /**
@@ -20,7 +19,7 @@ public class PacManClient {
 		new Thread(new ClientThread(PacManServer.SERVER_ADRESS, PacManServer.SERVER_PORT)).start();
 			
 		//load field
-		GameField f1 = new GameFieldLevel1();
+		Game1 f1 = new Game1();
 		
 		//init gamefield
 		new Window(f1);
