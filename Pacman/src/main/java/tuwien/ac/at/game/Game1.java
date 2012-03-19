@@ -1,13 +1,6 @@
 package main.java.tuwien.ac.at.game;
 
 public class Game1 extends Game{
-
-
-	public static short TOP = 1;
-	public static short BOTTOM = 2;
-	public static short RIGHT = 4;
-	public static short LEFT = 8;
-	public static short POINT = 16;
 	
 
 	private static short field[][] = {{1+8  ,       1,  1+4},
@@ -27,7 +20,7 @@ public class Game1 extends Game{
 		for(int i=0;i<startx.length;i++)
 			players[i] = new Player(i,startx[i],starty[i]);
 
-		players[1].setDirection(1);
-		players[2].setDirection(2);
+		players[1].setDirection(Player.UP);
+		players[2].setDirection(Player.LEFT);
 	}
 }

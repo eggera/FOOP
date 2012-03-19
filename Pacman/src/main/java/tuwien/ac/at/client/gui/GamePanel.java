@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 
 import main.java.tuwien.ac.at.game.Game;
+import main.java.tuwien.ac.at.game.Player;
 
 //I did the shuffling since I wanted the Gamelogic/Level representation seperated from the gui
 
@@ -32,13 +33,13 @@ public class GamePanel extends JPanel implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		if(arg0.getKeyCode() == KeyEvent.VK_LEFT)
-			game.keyTest(2);
+			game.keyTest(Player.LEFT);
 		if(arg0.getKeyCode() == KeyEvent.VK_RIGHT)
-			game.keyTest(0);
+			game.keyTest(Player.RIGHT);
 		if(arg0.getKeyCode() == KeyEvent.VK_UP)
-			game.keyTest(1);
+			game.keyTest(Player.UP);
 		if(arg0.getKeyCode() == KeyEvent.VK_DOWN)
-			game.keyTest(3);
+			game.keyTest(Player.DOWN);
 
 		arg0.getComponent().repaint();
 	}

@@ -3,6 +3,12 @@ package main.java.tuwien.ac.at.game;
 
 public class Player {
 	
+	public static final int UP    = 1;
+	public static final int DOWN  = 3;
+	public static final int LEFT  = 2;
+	public static final int RIGHT = 0;
+	
+	
 	//def. 
 	private int   direction; //0..3 , 0=RIGHT , 1=TOP,.. if change watch out for draw
 	private int   color;
