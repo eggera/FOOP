@@ -4,6 +4,7 @@ package main.java.tuwien.ac.at.game;
 public class Player {
 	
 	//def. 
+	private int   direction; //0..3 , 0=RIGHT , 1=TOP,.. if change watch out for draw
 	private int   color;
 	private int   points = 0;
 	private short posX;
@@ -60,5 +61,12 @@ public class Player {
 
 	public void setColor(int color) {
 		this.color = color;
+	}
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
 	}
 }

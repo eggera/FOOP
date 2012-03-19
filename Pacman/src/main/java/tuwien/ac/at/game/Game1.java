@@ -20,5 +20,7 @@ public class Game1 extends Game{
 		for(int i=0;i<startx.length;i++)
 			players[i] = new Player(i,startx[i],starty[i]);
 
+		players[1].setDirection(1);
+		players[2].setDirection(2);
 	}
 }

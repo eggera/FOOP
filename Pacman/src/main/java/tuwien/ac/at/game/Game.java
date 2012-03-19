@@ -87,17 +87,34 @@ public abstract class Game {
 								          pad_y + j * cell_s + (cell_s-food_s)/2, 
 								          food_s, food_s);
 			
+		int mouth_angle = 90;
+		
 		//draw Pacmans
 		if(pacman_s>0)
 			for(int i=0; i < players.length; i++)
 				if(players[i].isAlive())
 				{
-					graphics.setColor(Constants.COLORS[players[i].getColor()]);
+					int x = pad_x + players[i].getPosX() * cell_s;
+					int y = pad_y + players[i].getPosY() * cell_s;
+
+					int rotation = 45 + players[i].getDirection() * 90;             
 					
-					int x = pad_x + players[i].getPosX() * cell_s + (cell_s - pacman_s)/2;
-					int y = pad_y + players[i].getPosY() * cell_s + (cell_s - pacman_s)/2;
-			
-					graphics.fillOval(x, y, pacman_s,pacman_s);	
+					int px = x + (cell_s - pacman_s)/2;
+					int py = y + (cell_s - pacman_s)/2;
+
+					graphics.setColor(Constants.COLORS[players[i].getColor()]);
+					graphics.fillArc(px, py, pacman_s,pacman_s, rotation, 360 - mouth_angle);
+					
+
+					double eye_rotation = (rotation+ mouth_angle/2 + 4) * Math.PI/180.0 ;
+					int eye_size = pacman_s / 6  ;
+					int eye_dist = pacman_s * 7/18;
+					
+					int eyex = x + cell_s/2 - eye_size/2 + (int)(Math.cos(eye_rotation) * eye_dist);
+					int eyey = y + cell_s/2 - eye_size/2 - Math.abs( (int)(Math.sin(eye_rotation) * eye_dist) );
+														//the abs is here so that the eye is always "up"
+					graphics.setColor(Color.BLACK);
+					graphics.fillOval(eyex, eyey, pacman_s/6, pacman_s/6);
 				}
 		
 	}
