@@ -16,6 +16,11 @@ public abstract class Game {
 	protected int field_h; 
 	
 	
+	public void keyTest(int d)
+	{
+		players[0].setDirection(d);
+		
+	}
 
 	public void moveStuff() //get direction everybody moves in
 	{		
@@ -58,8 +63,8 @@ public abstract class Game {
 		graphics.setStroke(new BasicStroke(wall_t));
 
 		//i,j ~ y,x ~ h,w kinda wierd?
-		for(int i=0; i< field_h;i++)
-			for(int j=0;j<field_w;j++)
+		for(int i=0; i< field_w;i++)
+			for(int j=0;j<field_h;j++)
 			{
 				int x = pad_x + j * cell_s;
 				int y = pad_y + i * cell_s;
@@ -80,8 +85,8 @@ public abstract class Game {
 		//draw Food
 		graphics.setColor(Color.white);
 		if(food_s>0) 	
-			for(int i=0; i< field_h;i++)
-				for(int j=0;j<field_w;j++)
+			for(int i=0; i< field_w;i++)
+				for(int j=0;j<field_h;j++)
 					if((field[i][j] & Constants.POINT) != 0)
 						graphics.fillRect(pad_x + i * cell_s + (cell_s-food_s)/2,
 								          pad_y + j * cell_s + (cell_s-food_s)/2, 

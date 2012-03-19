@@ -10,6 +10,9 @@ import main.java.tuwien.ac.at.game.Game;
 public class Window extends JFrame {
 
 	public Window(final Game game){
+		GamePanel pan = new GamePanel(game);
+		
+		this.addKeyListener(pan);
 		add(new GamePanel(game));
 		setTitle("Distributed PacMan");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
