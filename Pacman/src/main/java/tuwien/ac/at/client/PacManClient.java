@@ -1,5 +1,8 @@
 package main.java.tuwien.ac.at.client;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import main.java.tuwien.ac.at.client.gui.Window;
 import main.java.tuwien.ac.at.game.Game1;
 
@@ -16,12 +19,22 @@ public class PacManClient {
 	 */
 	public static void main(String[] args) {
 		//connect to server
-		new Thread(new ClientThread(PacManServer.SERVER_ADRESS, PacManServer.SERVER_PORT)).start();
+		try {
+			new Thread(new ClientThread(
+							PacManServer.SERVER_ADRESS, 
+							PacManServer.SERVER_PORT
+			)).start();
 			
-		//load field
-		Game1 f1 = new Game1();
-		
-		//init gamefield
-		new Window(f1);
+			//load field
+			Game1 f1 = new Game1();
+			
+			//init gamefield
+			new Window(f1);
+			
+		} catch (UnknownHostException e) {
+			System.err.println("client: UnknownHostException, "+e.getMessage());
+		} catch (IOException e) {
+			System.err.println("client: IOException, "+e.getMessage());
+		}		
 	}
 }

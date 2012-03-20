@@ -9,32 +9,22 @@ import java.net.*;
 public class ClientThread implements Runnable {
 
 	private Socket socket;
-	private String serverName;
-	private int serverPort;
 	
 	@SuppressWarnings("unused")
 	private PrintWriter out;
 	@SuppressWarnings("unused")
 	private BufferedReader in;
 	
-	public ClientThread(String serverName, int serverPort) {
-		this.serverName = serverName;
-		this.serverPort = serverPort;
+	public ClientThread(String serverName, int serverPort) 
+						throws UnknownHostException, IOException {
+
+		this.socket = new Socket(serverName, serverPort);
+		out = new PrintWriter(socket.getOutputStream());
+		in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 	
 	public void run() {
 		
-		try {
-			this.socket = new Socket(serverName, serverPort);
-			out = new PrintWriter(socket.getOutputStream());
-			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		} catch (UnknownHostException e) {
-			System.err.println("client: UnknownHostException, "+e.getMessage());
-			return;
-		} catch (IOException e) {
-			System.err.println("client: IOException, "+e.getMessage());
-			return;
-		}
 		
 		while(true) {
 			/*
