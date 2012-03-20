@@ -39,6 +39,8 @@ public class GamePanel extends JPanel implements KeyListener
 			game.keyTest(1);
 		if(arg0.getKeyCode() == KeyEvent.VK_DOWN)
 			game.keyTest(3);
+		if(arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
+			System.exit(0);
 
 		arg0.getComponent().repaint();
 	}

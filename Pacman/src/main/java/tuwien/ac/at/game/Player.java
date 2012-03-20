@@ -35,6 +35,10 @@ public class Player {
 		return points++;
 	}
 	
+	public int getPoints(){
+		return points;
+	}
+	
 	public int transferPoints(){
 		return points;
 	}
