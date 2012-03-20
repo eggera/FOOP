@@ -8,6 +8,13 @@ import java.awt.Graphics2D;
 
 
 public abstract class Game {
+	
+	public static final short TOP = 1;
+	public static final short BOTTOM = 2;
+	public static final short RIGHT = 4;
+	public static final short LEFT = 8;
+	public static final short POINT = 16;
+	
 
 	protected Player[] players;
 	
