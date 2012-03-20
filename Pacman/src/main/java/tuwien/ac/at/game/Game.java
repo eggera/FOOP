@@ -143,7 +143,7 @@ public abstract class Game {
 			Color color = Constants.COLORS[players[i].getColor()];				
 			int rotation = 45 + players[i].getDirection() * 90; 
 			
-			this.drawPacman(graphics, pointlist_x + pointlist_border_t, line_y, font_h, color, rotation);
+			drawPacman(graphics, pointlist_x + pointlist_border_t, line_y, font_h, color, rotation);
 		}
 		
 	}
