@@ -23,11 +23,10 @@ public class ClientThread implements Runnable {
 	
 	public void run() {
 		
-		
-		while(true) {
-			
+		String response = "0 0 0 0";
+		while(socket.isConnected() && response != null && !response.equals("")) {
 			try {
-				String response = in.readLine();
+				response = in.readLine();
 				System.out.println("Response from server: "+response);
 			} catch (IOException e) {
 				System.err.println("client: IOException, "+e.getMessage());

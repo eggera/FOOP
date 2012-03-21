@@ -48,7 +48,7 @@ public abstract class Game {
 
 			for(int j=0;j<players.length;j++)
 				//if i can eat j and old or new position matches then eat
-				if(players[i].getColor() == (players[j].getColor()+1)%players.length &&
+				if(players[j].getColor() == (players[i].getColor()+1)%players.length &&
 						(( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||
 					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
 				{
