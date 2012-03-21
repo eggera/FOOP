@@ -11,7 +11,6 @@ public class ClientThread implements Runnable {
 	private Socket socket;
 	
 	private PrintWriter out;
-	@SuppressWarnings("unused")
 	private BufferedReader in;
 	
 	public ClientThread(String serverName, int serverPort) 

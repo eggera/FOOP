@@ -33,19 +33,15 @@ public class GamePanel extends JPanel implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		if(arg0.getKeyCode() == KeyEvent.VK_LEFT) {
-			game.keyTest(Player.LEFT);
 			game.sendKeyLeft();
 		}
 		if(arg0.getKeyCode() == KeyEvent.VK_RIGHT) {
-			game.keyTest(Player.RIGHT);
 			game.sendKeyRight();
 		}
 		if(arg0.getKeyCode() == KeyEvent.VK_UP) {
-			game.keyTest(Player.UP);
 			game.sendKeyUp();
 		}
 		if(arg0.getKeyCode() == KeyEvent.VK_DOWN) {
-			game.keyTest(Player.DOWN);
 			game.sendKeyDown();
 		}
 

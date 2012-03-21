@@ -10,13 +10,7 @@ import main.java.tuwien.ac.at.client.ClientThread;
 
 
 public abstract class Game {
-	
-	public static final short TOP = 1;
-	public static final short BOTTOM = 2;
-	public static final short RIGHT = 4;
-	public static final short LEFT = 8;
-	public static final short POINT = 16;
-	
+		
 	protected ClientThread clientThread;
 
 	protected Player[] players;
@@ -27,16 +21,62 @@ public abstract class Game {
 	protected int field_h; 
 	
 	
-	public void keyTest(int d)
-	{
-		players[0].setDirection(d);
+	public void movePlayers(int directions[]) 
+	{		
+		       //Right,Up,Left,Down
+		int dirx[] = new int[]{1, 0,-1,0};
+		int diry[] = new int[]{0,-1, 0,1};		
+		short bad_here[]  = new short[]{Constants.RIGHT, Constants.TOP, Constants.LEFT, Constants.BOTTOM};
+		short bad_there[] = new short[]{Constants.LEFT, Constants.BOTTOM, Constants.RIGHT, Constants.TOP};
+	
+		for(int i=0;i<players.length;i++)
+		{
+			int dir = directions[i];
+			int x = players[i].getPosX();
+			int y = players[i].getPosY();
+			int nx = x + dirx[dir]; //stands for new/next_x
+			int ny = y + diry[dir];
+							
+			if(nx < 0 || nx >= field_w || ny < 0 || ny >= field_h)
+				continue;
+			//The field here has a blocking wall
+			if((field[x][y] & bad_here[dir])!=0)
+				continue;
+			//The field I want to go to has a blocking wall
+			if((field[nx][ny] & bad_there[dir])!=0)
+				continue;
+
+			for(int j=0;j<players.length;j++)
+				//if i can eat j and old or new position matches then eat
+				if(players[i].getColor() == (players[j].getColor()+1)%players.length &&
+						(( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||
+					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
+				{
+					players[i].addPoints(players[j].getPoints());
+					players[j].setPoints(0);
+					endGame();
+				}
+			
+			players[i].setPosX((short)nx);
+			players[i].setPosY((short)ny);
+			
+			if((field[nx][ny] & Constants.POINT)!=0)
+			{
+				players[i].addPoint();
+				field[nx][ny] ^= Constants.POINT;
+			}
+		}
 		
 	}
-
-	public void moveStuff() //get direction everybody moves in
-	{		
-		//foreach player move player
+	
+	
+	public void endGame()
+	{
+		//nach der angabe soll das nächste level beginnen wenn einer 
+		//gefressen wurde, wir brauchen also noch irgendwo eine 2te punkteliste
 	}
+	
+	
 	
 	public boolean canMove(int player, short direction)
 	{
@@ -44,18 +84,26 @@ public abstract class Game {
 	}
 	
 	public void sendKeyUp() {
+		int[] dirs = new int[]{1,1,1};//test remove
+		this.movePlayers(dirs);
 		this.clientThread.sendKeyUp();
 	}
 	
 	public void sendKeyDown() {
+		int[] dirs = new int[]{3,3,3};//test remove
+		this.movePlayers(dirs);
 		this.clientThread.sendKeyDown();
 	}
 	
 	public void sendKeyLeft() {
+		int[] dirs = new int[]{2,2,2};//test remove
+		this.movePlayers(dirs);
 		this.clientThread.sendKeyLeft();
 	}
 	
 	public void sendKeyRight() {
+		int[] dirs = new int[]{0,0,0};//test remove
+		this.movePlayers(dirs);
 		this.clientThread.sendKeyRight();
 	}
 	
@@ -102,8 +150,8 @@ public abstract class Game {
 		for(int i=0; i< field_w;i++)
 			for(int j=0;j<field_h;j++)
 			{
-				int x = pad_x + j * cell_s;
-				int y = pad_y + i * cell_s;
+				int x = pad_x + i * cell_s;
+				int y = pad_y + j * cell_s;
 				
 				int xe = x + cell_s;
 				int ye = y + cell_s;
@@ -132,7 +180,6 @@ public abstract class Game {
 		//draw Pacmans
 		if(pacman_s>0)
 			for(int i=0; i < players.length; i++)
-				if(players[i].isAlive())
 				{
 					int px = pad_x + players[i].getPosX() * cell_s + (cell_s - pacman_s)/2;
 					int py = pad_y + players[i].getPosY() * cell_s + (cell_s - pacman_s)/2;
