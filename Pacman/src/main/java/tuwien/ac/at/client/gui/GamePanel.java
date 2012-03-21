@@ -15,7 +15,8 @@ public class GamePanel extends JPanel implements KeyListener
 {
 	private static final long serialVersionUID = 1L;
 	
-	Game game;
+	private Game game;
+	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -25,21 +26,28 @@ public class GamePanel extends JPanel implements KeyListener
 	public GamePanel(Game game)
 	{
 		this.game = game;
-		
 	//	this.addKeyListener(this);
 	//	this.requestFocusInWindow();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
-		if(arg0.getKeyCode() == KeyEvent.VK_LEFT)
+		if(arg0.getKeyCode() == KeyEvent.VK_LEFT) {
 			game.keyTest(Player.LEFT);
-		if(arg0.getKeyCode() == KeyEvent.VK_RIGHT)
+			game.sendKeyLeft();
+		}
+		if(arg0.getKeyCode() == KeyEvent.VK_RIGHT) {
 			game.keyTest(Player.RIGHT);
-		if(arg0.getKeyCode() == KeyEvent.VK_UP)
+			game.sendKeyRight();
+		}
+		if(arg0.getKeyCode() == KeyEvent.VK_UP) {
 			game.keyTest(Player.UP);
-		if(arg0.getKeyCode() == KeyEvent.VK_DOWN)
+			game.sendKeyUp();
+		}
+		if(arg0.getKeyCode() == KeyEvent.VK_DOWN) {
 			game.keyTest(Player.DOWN);
+			game.sendKeyDown();
+		}
 
 		if(arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
 			System.exit(0);

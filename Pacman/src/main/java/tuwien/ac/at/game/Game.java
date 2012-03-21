@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import main.java.tuwien.ac.at.client.ClientThread;
+
 
 public abstract class Game {
 	
@@ -15,6 +17,7 @@ public abstract class Game {
 	public static final short LEFT = 8;
 	public static final short POINT = 16;
 	
+	protected ClientThread clientThread;
 
 	protected Player[] players;
 	
@@ -38,6 +41,22 @@ public abstract class Game {
 	public boolean canMove(int player, short direction)
 	{
 		return true;
+	}
+	
+	public void sendKeyUp() {
+		this.clientThread.sendKeyUp();
+	}
+	
+	public void sendKeyDown() {
+		this.clientThread.sendKeyDown();
+	}
+	
+	public void sendKeyLeft() {
+		this.clientThread.sendKeyLeft();
+	}
+	
+	public void sendKeyRight() {
+		this.clientThread.sendKeyRight();
 	}
 	
 	

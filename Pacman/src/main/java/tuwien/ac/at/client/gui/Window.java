@@ -13,7 +13,7 @@ public class Window extends JFrame {
 		GamePanel pan = new GamePanel(game);
 		
 		this.addKeyListener(pan);
-		add(new GamePanel(game));
+		add(pan);
 		setTitle("Distributed PacMan");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(400, 400);

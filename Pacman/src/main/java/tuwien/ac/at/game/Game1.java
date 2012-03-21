@@ -1,5 +1,7 @@
 package main.java.tuwien.ac.at.game;
 
+import main.java.tuwien.ac.at.client.ClientThread;
+
 public class Game1 extends Game{
 	
 
@@ -10,7 +12,9 @@ public class Game1 extends Game{
 	private static short startx[] = {0,1,2};
 	private static short starty[] = {0,0,0};
 	
-	public Game1(){
+	public Game1(ClientThread clientThread){
+		
+		this.clientThread = clientThread;
 		
 		super.field = field;
 		super.field_w = 3;

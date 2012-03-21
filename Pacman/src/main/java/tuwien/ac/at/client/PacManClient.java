@@ -14,19 +14,23 @@ import main.java.tuwien.ac.at.server.PacManServer;
  */
 public class PacManClient {
 
+	private static ClientThread clientThread;
+	
 	/**
 	 * @param serverIP, port
 	 */
 	public static void main(String[] args) {
 		//connect to server
 		try {
-			new Thread(new ClientThread(
-							PacManServer.SERVER_ADRESS, 
-							PacManServer.SERVER_PORT
-			)).start();
+			clientThread = new ClientThread(
+								PacManServer.SERVER_ADRESS, 
+								PacManServer.SERVER_PORT
+							);
+			
+			new Thread(clientThread).start();
 			
 			//load field
-			Game1 f1 = new Game1();
+			Game1 f1 = new Game1(clientThread);
 			
 			//init gamefield
 			new Window(f1);
