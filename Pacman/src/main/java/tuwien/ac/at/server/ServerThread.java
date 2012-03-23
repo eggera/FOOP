@@ -27,9 +27,10 @@ public class ServerThread implements Runnable {
 	public void run() {
 		
 		synchronized(this) {
+			
+			System.out.println("waiting for clients to start ... ");
 			while(clientsStarted == 0  ||  clientsStarted < mst.getClientList().size()) {
 				try {
-					System.out.println("waiting for clients to start ... ");
 					wait();
 				} catch (InterruptedException e1) {
 					System.out.println("Client started");
@@ -38,8 +39,37 @@ public class ServerThread implements Runnable {
 				clientsStarted ++;
 			}
 		}
+
+		mst.startGame();
 		
 		System.out.println("clients online");
+		
+		
+		/*
+		System.out.println("Server: Game running.");
+		try{
+			while(running)
+			{
+				String message = "";
+				for(int i=0;i<clientList.size();i++)
+					message += clientList.get(i).getLastAction() + " ";
+
+				for(int i=0;i<clientList.size();i++)
+					clientList.get(i).send(message);
+
+				System.out.println("Server: Gamestep: " + message);
+				
+				Thread.sleep(PacManServer.GAME_SPEED);
+			}
+			for(int i=0;i<clientList.size();i++)
+				try{
+					clientList.get(i).send("");
+				}catch(Exception ign){} //try to send every client an -ending-
+
+			System.out.println("Server: Game ended.");
+		} catch(InterruptedException ex){
+			System.out.println("Server: Game ended unexpectedly." + ex.getMessage());
+		} */
 		
 	/*	
 		while(true) {
@@ -56,6 +86,8 @@ public class ServerThread implements Runnable {
 			
 		}
 		*/
+		
+		
 	}
 	
 }
