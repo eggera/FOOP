@@ -17,9 +17,6 @@ public class ServerThread implements Runnable {
 	
 	private int clientsStarted;
 	
-	private BufferedReader in;
-	private PrintWriter out;
-	
 	public ServerThread(MainServerThread mst) {
 		this.mst = mst;
 	}
@@ -42,12 +39,12 @@ public class ServerThread implements Runnable {
 		mst.startGame();
 		
 		System.out.println("clients online");
-		
-		
-		/*
 		System.out.println("Server: Game running.");
+		
 		try{
-			while(running)
+			List<ClientHandler> clientList = mst.getClientList();
+			
+			while(mst.isRunning())
 			{
 				String message = "";
 				for(int i=0;i<clientList.size();i++)
@@ -68,24 +65,7 @@ public class ServerThread implements Runnable {
 			System.out.println("Server: Game ended.");
 		} catch(InterruptedException ex){
 			System.out.println("Server: Game ended unexpectedly." + ex.getMessage());
-		} */
-		
-	/*	
-		while(true) {
-			
-			try {
-			//	System.out.println("server1");
-				String clientInput = in.readLine();
-			//	System.out.println("server2");
-				out.println(clientInput);
-			} catch (IOException e) {
-				System.err.println("server: IOException, "+e.getMessage());
-				return;
-			}
-			
-		}
-		*/
-		
+		}		
 		
 	}
 	

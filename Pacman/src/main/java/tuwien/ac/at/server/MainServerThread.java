@@ -17,6 +17,8 @@ public class MainServerThread implements Runnable {
 	private ServerThread serverThread;
 	private ServerSocket serverSocket;
 	
+	private int currentClientID;
+	
 	//if one client connection dies everything dies.
 	private boolean running; 
 	//assumed if a clients sends "" that a user pressed exited and therefore everything dies.
@@ -29,6 +31,8 @@ public class MainServerThread implements Runnable {
 		
 		private boolean ready = false;
 		private boolean wait;
+		private boolean connectionError; // error in connecting running client, game is aborted
+		private boolean endGame;
 		
 		private String lastAction = "0";
 		
@@ -48,6 +52,7 @@ public class MainServerThread implements Runnable {
 					lastAction = in.readLine();
 					if(lastAction.equals("S")) {
 						ready = true;
+						
 						synchronized(serverThread) {
 							serverThread.notifyAll();
 						}
@@ -66,17 +71,25 @@ public class MainServerThread implements Runnable {
 				while(running && lastAction != null && !lastAction.equals("")) {
 					lastAction = in.readLine();
 				}
+				
+				if(lastAction == null  ||  lastAction.equals(""))
+					endGame = true;
+				
 			} catch (IOException e) {
 				System.err.println("Server: Connection to client failed unexpectedly. \n"+e.getMessage());
+				connectionError = true;
 			} catch (ActiveGameException age) {
 				System.err.println("Server: "+age.getMessage());
 			} catch(Exception e){
 				System.err.println("client disconnected");
+				connectionError = true;
 			}
 			finally{
-				running = false;
-				close();
-				System.out.println("Server: Client connection thread stopped.");
+				if(connectionError || endGame) {
+					running = false;
+					close();
+					System.out.println("Server: Client connection thread stopped.");
+				}
 			}
 		}
 
@@ -119,6 +132,10 @@ public class MainServerThread implements Runnable {
 	
 	public List<ClientHandler> getClientList() {
 		return this.clientList;
+	}
+	
+	public int getClientID() {
+		return this.currentClientID++;
 	}
 	
 	public void startGame() {

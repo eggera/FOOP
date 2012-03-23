@@ -3,6 +3,9 @@ package main.java.tuwien.ac.at.client;
 import java.io.*;
 import java.net.*;
 
+import main.java.tuwien.ac.at.game.Game;
+import main.java.tuwien.ac.at.game.Player;
+
 /**
  * This class contains the game's client logic
  */
@@ -12,6 +15,8 @@ public class ClientThread implements Runnable {
 	
 	private PrintWriter out;
 	private BufferedReader in;
+	
+	private Game game;
 	
 	public ClientThread(String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
@@ -30,6 +35,7 @@ public class ClientThread implements Runnable {
 			try {
 				response = in.readLine();
 				System.out.println("Response from server: "+response);
+				
 			} catch (IOException e) {
 				System.err.println("client: Disconnected, "+e.getMessage());
 			}
@@ -38,23 +44,28 @@ public class ClientThread implements Runnable {
 		
 	}
 	
+	public void setGame(Game game) {
+		this.game = game;
+	}
+	
 	public void sendStart() {
 		out.println("S");
 	}
 	
 	public void sendKeyUp() {
-		out.println("UP");
+		out.println(Player.UP);
 	}
 	
 	public void sendKeyDown() {
-		out.println("DOWN");
+		out.println(Player.DOWN);
 	}
 	
 	public void sendKeyLeft() {
-		out.println("LEFT");
+		out.println(Player.LEFT);
 	}
 	
 	public void sendKeyRight() {
-		out.println("RIGHT");
+		out.println(Player.RIGHT);
 	}
+	
 }
