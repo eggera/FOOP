@@ -83,6 +83,10 @@ public abstract class Game {
 		return true;
 	}
 	
+	public void sendStart() {
+		this.clientThread.sendStart();
+	}
+	
 	public void sendKeyUp() {
 		int[] dirs = new int[]{1,1,1};//test remove
 		this.movePlayers(dirs);

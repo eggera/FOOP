@@ -6,29 +6,42 @@
 package main.java.tuwien.ac.at.server;
 
 import java.net.*;
+import java.util.List;
 import java.io.*;
+
+import main.java.tuwien.ac.at.server.MainServerThread.ClientHandler;
 
 public class ServerThread implements Runnable {
 
-	private Socket clientSocket;
+	private MainServerThread mst;
+	
+	private int clientsStarted;
 	
 	private BufferedReader in;
 	private PrintWriter out;
 	
-	public ServerThread(Socket socket) {
-		this.clientSocket = socket;
+	public ServerThread(MainServerThread mst) {
+		this.mst = mst;
 	}
 	
 	public void run() {
 		
-		try {
-			in  = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-			out = new PrintWriter(clientSocket.getOutputStream(), true);
-		} catch (IOException e) {
-			System.err.println("ServerThread: IOException, "+e.getMessage());
-			return;
+		synchronized(this) {
+			while(clientsStarted == 0  ||  clientsStarted < mst.getClientList().size()) {
+				try {
+					System.out.println("waiting for clients to start ... ");
+					wait();
+				} catch (InterruptedException e1) {
+					System.out.println("Client started");
+					System.err.println("serverThread: Interrupted, "+e1.getMessage());
+				}
+				clientsStarted ++;
+			}
 		}
 		
+		System.out.println("clients online");
+		
+	/*	
 		while(true) {
 			
 			try {
@@ -42,7 +55,7 @@ public class ServerThread implements Runnable {
 			}
 			
 		}
-		
+		*/
 	}
 	
 }

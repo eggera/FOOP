@@ -23,17 +23,23 @@ public class ClientThread implements Runnable {
 	
 	public void run() {
 		
+		System.out.println("Press \"S\" to start");
+		
 		String response = "0 0 0 0";
 		while(socket.isConnected() && response != null && !response.equals("")) {
 			try {
 				response = in.readLine();
 				System.out.println("Response from server: "+response);
 			} catch (IOException e) {
-				System.err.println("client: IOException, "+e.getMessage());
+				System.err.println("client: Disconnected, "+e.getMessage());
 			}
 			
 		}
 		
+	}
+	
+	public void sendStart() {
+		out.println("S");
 	}
 	
 	public void sendKeyUp() {

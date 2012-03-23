@@ -16,9 +16,9 @@ public class Constants {
 	//not quite happy with these constants here
 	public static short MAX_PLAYERS = 3;
 	public static Color[] COLORS = 
-		new Color[]{ Color.yellow,
-					 Color.red, 
+		new Color[]{ Color.red, 
 					 Color.blue,
 					 Color.green,
+					 Color.yellow,
 					 Color.cyan };
 }
