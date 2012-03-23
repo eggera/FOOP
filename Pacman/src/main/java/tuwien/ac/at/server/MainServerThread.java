@@ -27,7 +27,6 @@ public class MainServerThread implements Runnable {
 		private BufferedReader in;
 		private PrintWriter out;
 		
-		private final Object lock;
 		private boolean ready = false;
 		private boolean wait;
 		
@@ -37,12 +36,13 @@ public class MainServerThread implements Runnable {
 			this.clientSocket = socket;
 			this.in  = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
 			this.out = new PrintWriter(clientSocket.getOutputStream(), true);
-			
-			lock = new Object();
 		}
 			
 		public void run() {
 			try {
+				
+				if(running)
+					throw new ActiveGameException("Client may not connect, game is already running");
 				
 				while(!ready && lastAction != null && !lastAction.equals("")) {
 					lastAction = in.readLine();
@@ -68,6 +68,8 @@ public class MainServerThread implements Runnable {
 				}
 			} catch (IOException e) {
 				System.err.println("Server: Connection to client failed unexpectedly. \n"+e.getMessage());
+			} catch (ActiveGameException age) {
+				System.err.println("Server: "+age.getMessage());
 			} catch(Exception e){
 				System.err.println("client disconnected");
 			}
@@ -96,10 +98,8 @@ public class MainServerThread implements Runnable {
 			out.println(s);
 		}
 		
-		public synchronized void wakeUpClient() { 
-			//lock.notifyAll();
+		public synchronized void wakeUpClient() {
 			this.notifyAll();
-		//	Thread.currentThread().interrupt();
 		}
 		
 		public void close()
@@ -121,7 +121,7 @@ public class MainServerThread implements Runnable {
 		return this.clientList;
 	}
 	
-	public synchronized void startGame() {
+	public void startGame() {
 		this.running = true;
 		for(ClientHandler client : clientList) {
 			while(!client.isWaiting()) {

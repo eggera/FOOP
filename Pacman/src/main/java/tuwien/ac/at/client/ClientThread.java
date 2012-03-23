@@ -25,7 +25,7 @@ public class ClientThread implements Runnable {
 		
 		System.out.println("Press \"S\" to start");
 		
-		String response = "0 0 0 0";
+		String response = "0 0 0 0"; // right up left down
 		while(socket.isConnected() && response != null && !response.equals("")) {
 			try {
 				response = in.readLine();

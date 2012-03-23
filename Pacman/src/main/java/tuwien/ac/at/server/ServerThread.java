@@ -33,7 +33,6 @@ public class ServerThread implements Runnable {
 				try {
 					wait();
 				} catch (InterruptedException e1) {
-					System.out.println("Client started");
 					System.err.println("serverThread: Interrupted, "+e1.getMessage());
 				}
 				clientsStarted ++;
