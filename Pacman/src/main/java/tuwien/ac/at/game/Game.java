@@ -44,8 +44,14 @@ public abstract class Game {
 			int dir = directions[i];
 			int x = players[i].getPosX();
 			int y = players[i].getPosY();
-			int nx = x + dirx[dir]; //stands for new/next_x
-			int ny = y + diry[dir];
+			int nx = x; //stands for new/next_x
+			int ny = y;
+			
+			if(dir != -1) {
+				nx = x + dirx[dir];
+				ny = y + diry[dir];
+				players[i].setDirection(dir);
+			}			
 							
 			if(nx < 0 || nx >= field_w || ny < 0 || ny >= field_h)
 				continue;
@@ -55,17 +61,6 @@ public abstract class Game {
 			//The field I want to go to has a blocking wall
 			if((field[nx][ny] & bad_there[dir])!=0)
 				continue;
-
-			for(int j=0;j<players.length;j++)
-				//if i can eat j and old or new position matches then eat
-				if(players[j].getColor() == (players[i].getColor()+1)%players.length &&
-						(( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||
-					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
-				{
-					players[i].addPoints(players[j].getPoints());
-					players[j].setPoints(0);
-					endGame();
-				}
 			
 			players[i].setPosX((short)nx);
 			players[i].setPosY((short)ny);
@@ -74,6 +69,23 @@ public abstract class Game {
 			{
 				players[i].addPoint();
 				field[nx][ny] ^= Constants.POINT;
+			}
+		}
+		
+		for(int i=0; i < players.length; i++) {
+			
+			int nx = players[i].getPosX();
+			int ny = players[i].getPosY();
+			for(int j=0;j<players.length;j++) {
+				//if i can eat j and old or new position matches then eat
+				if(players[j].getColor() == (players[i].getColor()+1)%players.length &&
+						(/*( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||*/
+					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
+				{
+					players[i].addPoints(players[j].getPoints());
+					players[j].setPoints(0);
+					endGame();
+				}
 			}
 		}
 		
@@ -103,29 +115,21 @@ public abstract class Game {
 	}
 	
 	public void sendKeyUp() {
-//		int[] dirs = new int[]{1,1,1};//test remove
-//		this.movePlayers(dirs);
 		this.clientThread.sendKeyUp();
 	}
 	
 	public void sendKeyDown() {
-//		int[] dirs = new int[]{3,3,3};//test remove
-//		this.movePlayers(dirs);
 		this.clientThread.sendKeyDown();
 	}
 	
 	public void sendKeyLeft() {
-//		int[] dirs = new int[]{2,2,2};//test remove
-//		this.movePlayers(dirs);
 		this.clientThread.sendKeyLeft();
 	}
-	
+
 	public void sendKeyRight() {
-//		int[] dirs = new int[]{0,0,0};//test remove
-//		this.movePlayers(dirs);
 		this.clientThread.sendKeyRight();
 	}
-	
+
 	
 	public void draw(Graphics g){
 		
@@ -225,8 +229,9 @@ public abstract class Game {
 			graphics.setColor(Color.white);
 			graphics.drawString(points, pointlist_x + pointlist_w - font_w - pointlist_border_t, line_y + font_b);
 		
-			Color color = Constants.COLORS[players[i].getColor()];				
-			int rotation = 45 + players[i].getDirection() * 90; 
+			Color color = Constants.COLORS[players[i].getColor()];
+			
+			int rotation = 45 + Player.RIGHT * 90;
 			
 			drawPacman(graphics, pointlist_x + pointlist_border_t, line_y, font_h, color, rotation);
 		}
