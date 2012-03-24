@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -29,6 +30,8 @@ public class MainServerThread implements Runnable {
 		private BufferedReader in;
 		private PrintWriter out;
 		
+		private int clientID;
+		
 		private boolean ready = false;
 		private boolean wait;
 		private boolean connectionError; // error in connecting running client, game is aborted
@@ -36,17 +39,20 @@ public class MainServerThread implements Runnable {
 		
 		private String lastAction = "0";
 		
-		public ClientHandler(Socket socket) throws IOException {
+		public ClientHandler(Socket socket, int clientID) throws IOException {
 			this.clientSocket = socket;
 			this.in  = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
 			this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+			this.clientID = clientID;
 		}
 			
 		public void run() {
 			try {
 				
-				if(running)
+				if(running) {
+					clientList.remove(clientID);
 					throw new ActiveGameException("Client may not connect, game is already running");
+				}
 				
 				while(!ready && lastAction != null && !lastAction.equals("")) {
 					lastAction = in.readLine();
@@ -85,11 +91,11 @@ public class MainServerThread implements Runnable {
 				connectionError = true;
 			}
 			finally{
-				if(connectionError || endGame) {
+				if(connectionError || endGame) 
 					running = false;
-					close();
-					System.out.println("Server: Client connection thread stopped.");
-				}
+				
+				close();
+				System.out.println("Server: Client connection thread stopped.");
 			}
 		}
 
@@ -128,14 +134,11 @@ public class MainServerThread implements Runnable {
 	
 	public MainServerThread() {
 		clientList = new ArrayList<ClientHandler>();
+		clientList = Collections.synchronizedList(clientList);
 	}
 	
 	public List<ClientHandler> getClientList() {
 		return this.clientList;
-	}
-	
-	public int getClientID() {
-		return this.currentClientID++;
 	}
 	
 	public void startGame() {
@@ -176,7 +179,7 @@ public class MainServerThread implements Runnable {
 				ClientHandler toClient;
 				try {
 					if(clientList.size() < 3) {
-						toClient = new ClientHandler(serverSocket.accept());	
+						toClient = new ClientHandler(serverSocket.accept(), currentClientID++);	
 						clientList.add(toClient);
 						new Thread(toClient).start();
 					}

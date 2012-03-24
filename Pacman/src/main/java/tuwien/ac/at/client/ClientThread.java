@@ -42,6 +42,11 @@ public class ClientThread implements Runnable {
 			
 		}
 		
+		if(response == null) {
+			System.out.println("Game is running, wait for next game!");
+			System.exit(1);
+		}
+		
 	}
 	
 	public void setGame(Game game) {

@@ -5,9 +5,7 @@
 
 package main.java.tuwien.ac.at.server;
 
-import java.net.*;
 import java.util.List;
-import java.io.*;
 
 import main.java.tuwien.ac.at.server.MainServerThread.ClientHandler;
 
