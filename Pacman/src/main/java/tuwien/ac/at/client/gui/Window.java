@@ -11,6 +11,7 @@ public class Window extends JFrame {
 
 	public Window(final Game game){
 		GamePanel pan = new GamePanel(game);
+		game.setPanel(pan);
 		
 		this.addKeyListener(pan);
 		add(pan);

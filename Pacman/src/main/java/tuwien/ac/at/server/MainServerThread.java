@@ -144,6 +144,7 @@ public class MainServerThread implements Runnable {
 	public void startGame() {
 		this.running = true;
 		for(ClientHandler client : clientList) {
+			// server was too fast, clientHandler is not yet waiting
 			while(!client.isWaiting()) {
 				try {
 					Thread.sleep(10);

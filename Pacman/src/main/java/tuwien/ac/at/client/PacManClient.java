@@ -27,13 +27,14 @@ public class PacManClient {
 								PacManServer.SERVER_PORT
 							);
 			
-			new Thread(clientThread).start();
-			
 			//load field
 			Game1 f1 = new Game1(clientThread);
 			
 			//init gamefield
 			new Window(f1);
+			
+			clientThread.setGame(f1);
+			new Thread(clientThread).start();
 			
 		} catch (UnknownHostException e) {
 			System.err.println("client: UnknownHostException, "+e.getMessage());

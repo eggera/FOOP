@@ -7,12 +7,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import main.java.tuwien.ac.at.client.ClientThread;
+import main.java.tuwien.ac.at.client.gui.GamePanel;
 
 
 public abstract class Game {
 		
 	protected ClientThread clientThread;
-
+	protected GamePanel gamePanel;
+	
 	protected Player[] players;
 	
 	protected short field[][];
@@ -20,6 +22,10 @@ public abstract class Game {
 	protected int field_w; //# of horizontal cells
 	protected int field_h; 
 	
+	
+	public void setPanel(GamePanel panel) {
+		this.gamePanel = panel;
+	}
 	
 	public void movePlayers(int directions[]) 
 	{		
@@ -31,6 +37,10 @@ public abstract class Game {
 	
 		for(int i=0;i<players.length;i++)
 		{
+			// no more active players
+			if(directions[i] == -1)
+				break;
+			
 			int dir = directions[i];
 			int x = players[i].getPosX();
 			int y = players[i].getPosY();
@@ -67,6 +77,7 @@ public abstract class Game {
 			}
 		}
 		
+		this.gamePanel.repaint();
 	}
 	
 	
@@ -83,31 +94,35 @@ public abstract class Game {
 		return true;
 	}
 	
+	public int getNrOfPlayers() {
+		return this.players.length;
+	}
+	
 	public void sendStart() {
 		this.clientThread.sendStart();
 	}
 	
 	public void sendKeyUp() {
-		int[] dirs = new int[]{1,1,1};//test remove
-		this.movePlayers(dirs);
+//		int[] dirs = new int[]{1,1,1};//test remove
+//		this.movePlayers(dirs);
 		this.clientThread.sendKeyUp();
 	}
 	
 	public void sendKeyDown() {
-		int[] dirs = new int[]{3,3,3};//test remove
-		this.movePlayers(dirs);
+//		int[] dirs = new int[]{3,3,3};//test remove
+//		this.movePlayers(dirs);
 		this.clientThread.sendKeyDown();
 	}
 	
 	public void sendKeyLeft() {
-		int[] dirs = new int[]{2,2,2};//test remove
-		this.movePlayers(dirs);
+//		int[] dirs = new int[]{2,2,2};//test remove
+//		this.movePlayers(dirs);
 		this.clientThread.sendKeyLeft();
 	}
 	
 	public void sendKeyRight() {
-		int[] dirs = new int[]{0,0,0};//test remove
-		this.movePlayers(dirs);
+//		int[] dirs = new int[]{0,0,0};//test remove
+//		this.movePlayers(dirs);
 		this.clientThread.sendKeyRight();
 	}
 	

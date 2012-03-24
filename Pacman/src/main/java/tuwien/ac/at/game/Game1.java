@@ -19,7 +19,6 @@ public class Game1 extends Game{
 	public Game1(ClientThread clientThread){
 		
 		this.clientThread = clientThread;
-		this.clientThread.setGame(this);
 		
 		super.field = field;
 		super.field_w = field.length;
