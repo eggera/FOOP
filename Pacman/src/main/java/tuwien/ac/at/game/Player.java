@@ -1,20 +1,17 @@
 package main.java.tuwien.ac.at.game;
 
+import java.io.Serializable;
 
-public class Player {
-	
-	public static final int UP    = 1;
-	public static final int DOWN  = 3;
-	public static final int LEFT  = 2;
-	public static final int RIGHT = 0;
-	
+
+class Player implements Serializable {
+	private static final long serialVersionUID = 8572230220195777714L;
 	
 	//def. 
 	private int   direction; //0..3 , 0=RIGHT , 1=TOP,.. if change watch out for draw
 	private int   color;
-	private int   points = 0;
 	private short posX;
 	private short posY;
+	private double   mouth_angle;
 
 	public Player(){
 		color = 0;
@@ -24,21 +21,6 @@ public class Player {
 		this.color = color;
 		this.posX  = posX;
 		this.posY  = posY;
-	}
-	
-	public int addPoint(){
-		return points++;
-	}
-
-	public int getPoints(){
-		return points;
-	}
-	public void setPoints(int p){
-		points  = p;
-	}
-
-	public int addPoints(int p){
-		return points+=p;
 	}
 	
 	public short getPosX(){
@@ -70,5 +52,13 @@ public class Player {
 
 	public void setDirection(int direction) {
 		this.direction = direction;
+	}
+
+	public void setMouthAngle(double mouth_angle) {
+		this.mouth_angle = mouth_angle;
+	}
+
+	public double getMouthAngle() {
+		return mouth_angle;
 	}
 }

@@ -1,86 +1,69 @@
 package main.java.tuwien.ac.at.client;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.*;
 
-import main.java.tuwien.ac.at.game.Game;
-import main.java.tuwien.ac.at.game.Player;
+import main.java.tuwien.ac.at.client.gui.Window;
+import main.java.tuwien.ac.at.game.Constants;
+import main.java.tuwien.ac.at.game.Level;
 
 /**
  * This class contains the game's client logic
  */
-public class ClientThread implements Runnable {
+public class ClientThread implements Runnable, KeyListener{
 
+	Window window;
+	
 	private Socket socket;
 	
 	private PrintWriter out;
-	private BufferedReader in;
+	private ObjectInputStream in;
 	
-	private boolean active;
-	private Game game;
+	private Level game;
 	
-	public ClientThread(String serverName, int serverPort) 
+	public ClientThread(Window w,String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
-
+		
 		socket = new Socket(serverName, serverPort);
 		out    = new PrintWriter(socket.getOutputStream(), true);
-		in     = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		in     = new ObjectInputStream(socket.getInputStream());
+		
+		window = w;
+
+		w.addKeyListener(this);
 	}
 	
 	public void run() {
 		
 		System.out.println("Press \"S\" to start");
 		
-		String response = "0 0 0 0"; // directions in case of 4 players
-		while(socket.isConnected() && response != null && !response.equals("")) {
-			try {
-				response = in.readLine();
-				System.out.println("Response from server: "+response);
-				
-				if(response != null  &&  !response.equals("")) {
-					if(!active)
-						active = true;
-					
-					processResponse(response);
+		try {
+		Object o ;
+		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("")) {
+				if(o instanceof String)
+					processResponse((String) o);
+				if(o instanceof Level)
+					window.setLevel((Level) o); //TODO: global point stuff
+			}			
+		} catch (IOException e) {
+			System.err.println("client: Disconnected, "+e.getMessage());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try	{	
+				socket.close();
 				}
-				
-			} catch (IOException e) {
-				System.err.println("client: Disconnected, "+e.getMessage());
-			}
-			
+			catch(Exception ign){}
+			System.exit(0);
 		}
-		
-		if(response == null  ||  response.equals("")) {
-			if(!active)
-				System.out.println("Game is running, wait for next game!");
-			
-			System.exit(1);
-		}
-		
 	}
 	
-	public void setGame(Game game) {
+	public void setLevel(Level game) {
 		this.game = game;
-	}
-	
-	public void sendStart() {
-		out.println("S");
-	}
-	
-	public void sendKeyUp() {
-		out.println(Player.UP);
-	}
-	
-	public void sendKeyDown() {
-		out.println(Player.DOWN);
-	}
-	
-	public void sendKeyLeft() {
-		out.println(Player.LEFT);
-	}
-	
-	public void sendKeyRight() {
-		out.println(Player.RIGHT);
+		window.setLevel(game);
 	}
 	
 	public void processResponse(String response) {
@@ -89,6 +72,7 @@ public class ClientThread implements Runnable {
 		
 		int i;
 		for(i = 0; i < directions.length; ++i) {
+			
 			if(directions[i].equals("S"))
 				dirs[i] = -1;
 			else
@@ -100,6 +84,37 @@ public class ClientThread implements Runnable {
 		}
 		
 		game.movePlayers(dirs);
+		window.repaint();
 	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+
+		if(arg0.getKeyCode() == KeyEvent.VK_LEFT) 
+			out.println(Constants.LEFT);
+		
+		if(arg0.getKeyCode() == KeyEvent.VK_RIGHT) 
+			out.println(Constants.RIGHT);
+		
+		if(arg0.getKeyCode() == KeyEvent.VK_UP) 
+			out.println(Constants.UP);
+		
+		if(arg0.getKeyCode() == KeyEvent.VK_DOWN) 
+			out.println(Constants.DOWN);
+		
+		if(arg0.getKeyCode() == KeyEvent.VK_S)
+			out.println("S");
+
+		if(arg0.getKeyCode() == KeyEvent.VK_ESCAPE){
+			out.println("");
+			System.exit(0);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {	}
 	
 }

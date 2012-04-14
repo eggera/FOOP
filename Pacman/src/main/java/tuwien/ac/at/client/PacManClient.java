@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import main.java.tuwien.ac.at.client.gui.Window;
-import main.java.tuwien.ac.at.game.Game1;
+import main.java.tuwien.ac.at.game.Constants;
 
 import main.java.tuwien.ac.at.server.PacManServer;
 
@@ -22,18 +22,16 @@ public class PacManClient {
 	public static void main(String[] args) {
 		//connect to server
 		try {
-			clientThread = new ClientThread(
+			Window w = new Window();
+			
+			clientThread = new ClientThread(w,
 								PacManServer.SERVER_ADRESS, 
 								PacManServer.SERVER_PORT
 							);
+
 			
-			//load field
-			Game1 f1 = new Game1(clientThread);
+			clientThread.setLevel(Constants.LEVEL2);
 			
-			//init gamefield
-			new Window(f1);
-			
-			clientThread.setGame(f1);
 			new Thread(clientThread).start();
 			
 		} catch (UnknownHostException e) {
