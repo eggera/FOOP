@@ -44,9 +44,9 @@ public class MainServerThread implements Runnable {
 		}
 			
 		public void run() {
-			
+				
 			System.out.println("Server: Client " + clientID() + " waiting for start...");
-		//wait till S or ..exit
+			//wait till S or ..exit
 			try	{
 				while( (lastAction = in.readLine()) != null && !lastAction.equals("") && !lastAction.equals("S"));
 			}catch(Exception ex) {
@@ -190,8 +190,8 @@ public class MainServerThread implements Runnable {
 					Thread.sleep(PacManServer.GAME_SPEED);
 				}
 				
-
 				System.out.println("Server: Game ended.");
+				
 			} catch(Exception ex){
 				System.err.println("Server: Game ended unexpectedly:\n" + ex.getMessage());
 			}

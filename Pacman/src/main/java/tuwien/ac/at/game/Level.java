@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.Serializable;
-import java.util.Date;
-
 
 public abstract class Level implements Serializable {
 	
@@ -99,14 +97,17 @@ public abstract class Level implements Serializable {
 			onLevelEnd.gameEnd(points);
 	}
 	
-
-	private long lastTime = System.currentTimeMillis();
+	//eating animation controlling
+//	private long lastTime = System.currentTimeMillis();
+	
 	public void draw(Graphics g){
 		
-		long tmp = System.currentTimeMillis();
-		double time = tmp - lastTime;
-		lastTime = tmp;
-		
+		/*
+		 * TODO mouth animation or delete plzzz
+		 */
+//		long currTime = System.currentTimeMillis();
+//		double time   = currTime - lastTime;
+//		lastTime      = currTime;
 		
 		Graphics2D graphics = (Graphics2D) g;
 

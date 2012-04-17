@@ -1,6 +1,20 @@
 
-
 foop assignments 1-3
 
+Start: PacManServer and 3 PacManClient to start the game
 
-Start: DEBUG PacManClient starts GUI
+ToDo:
+
+	BUGS:
+		
+
+	TICKETS:
+		1)  [open] disable player after he got eaten
+		2)  [open] end game after all points are consumed
+		3)  [open] load a new level after level ends
+		4)  [open] switch colors after a fixed time
+		5)  [open] make more levels
+		6)  [open] maybe use a Logger for informations output
+		7)  [open] compute game speed and set it automatic, etc. timer relation to ping in the network
+		8)  [open] notify the client if something went wrong in the network, current task client exits without promting an error 
+		9)  [open] add global points (maybe server have to store them) 
