@@ -30,7 +30,7 @@ public class PacManClient {
 							);
 
 			
-			clientThread.setLevel(Constants.LEVEL2);
+			clientThread.setLevel(Constants.LEVEL1);
 			
 			new Thread(clientThread).start();
 			

@@ -14,8 +14,10 @@ public abstract class Level implements Serializable {
 	protected transient LevelEndHandler onLevelEnd;
 	
 	protected Player[] players;
-	protected int[] points;
+//	protected int[] points;
 	
+	protected boolean end;
+
 	protected short field[][];
 
 	protected int field_w; //# of horizontal cells
@@ -67,7 +69,7 @@ public abstract class Level implements Serializable {
 			
 			if((field[nx][ny] & Constants.F_POINT)!=0)
 			{
-				points[i]++;
+				players[i].addPoint();
 				field[nx][ny] ^= Constants.F_POINT;
 			}
 		}
@@ -82,8 +84,8 @@ public abstract class Level implements Serializable {
 						(/*( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||*/
 					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
 				{
-					points[i]+=points[j];
-					points[j]=0;
+					players[i].addPoints(players[j].getPoints());
+					players[j].setPoints(0);
 					endGame();
 				}
 			}
@@ -93,8 +95,23 @@ public abstract class Level implements Serializable {
 	
 	public void endGame()
 	{
-		if(onLevelEnd != null)
-			onLevelEnd.gameEnd(points);
+//		if(onLevelEnd != null)
+//			onLevelEnd.gameEnd();
+		end = true;
+	}
+	
+	// Determines whether this level is finished
+	// Either a player gets eaten or all points were consumed
+	public boolean isFinished() {
+		return end;
+	}
+	
+	// puts the points from all players into a point array
+	public int[] getPlayerPoints() {
+		int[] points = new int[players.length];
+		for(int i = 0; i < players.length; ++i)
+			points[i] = players[i].getPoints();
+		return points;
 	}
 	
 	//eating animation controlling
@@ -165,15 +182,23 @@ public abstract class Level implements Serializable {
 					graphics.drawLine(x ,y ,x ,ye);
 			}
 	
+		boolean foodExists = false;
+		
 		//draw Food
 		graphics.setColor(Color.white);
 		if(food_s>0) 	
 			for(int i=0; i< field_w;i++)
 				for(int j=0;j<field_h;j++)
-					if((field[i][j] & Constants.F_POINT) != 0)
+					if((field[i][j] & Constants.F_POINT) != 0) {
 						graphics.fillRect(pad_x + i * cell_s + (cell_s-food_s)/2,
 								          pad_y + j * cell_s + (cell_s-food_s)/2, 
 								          food_s, food_s);
+						
+						foodExists = true;
+					}
+		
+		if(!foodExists) 
+			endGame();
 			
 		
 		//draw Pacmans
@@ -203,7 +228,7 @@ public abstract class Level implements Serializable {
 			
 		for(int i=0; i< players.length; i++)
 		{
-			String points = String.valueOf(this.points[i]);
+			String points = String.valueOf(players[i].getPoints());
 			int font_w = graphics.getFontMetrics().stringWidth(points);
 			int line_y = pointlist_y + font_h  * i;
 			

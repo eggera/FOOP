@@ -40,7 +40,7 @@ class GamePanel extends JPanel
 @SuppressWarnings("serial")
 public class Window extends JFrame {
 	
-	GamePanel pan = new GamePanel();
+	GamePanel pan;
 	
 	public Window(){
 		pan = new GamePanel();

@@ -17,9 +17,9 @@ public class ConstantLevel extends Level {
 		for(int i=0;i<startx.length;i++)
 			players[i] = new Player(i,startx[i],starty[i]);
 		
-		super.points = new int[startx.length];
-		for(int i=0;i<startx.length;i++)
-			points[i] = 0;
+//		super.points = new int[startx.length];
+//		for(int i=0;i<startx.length;i++)
+//			points[i] = 0;
 		
 		for(int i=0; i<field_h;i++)
 		{

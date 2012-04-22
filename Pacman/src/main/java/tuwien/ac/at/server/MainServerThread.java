@@ -67,7 +67,7 @@ public class MainServerThread implements Runnable {
 					if(!ch.isReady())
 						allReady = false;	
 			
-				if(allReady && clientList.size() == 3 && !running){
+				if(allReady && clientList.size() <= 3 && !running){
 					System.out.println("Server: Client " + clientID() + " is beginning the game.");
 					running = true;
 					serverTimerThread = new ServerTimer();
@@ -81,7 +81,7 @@ public class MainServerThread implements Runnable {
 					} catch (InterruptedException ign) { } //as long as we are not running we keep waiting
 			}	
 
-			System.out.println("Server: Client " + clientID() + "running...");
+			System.out.println("Server: Client " + clientID() + " running...");
 			//_THE_ basic reading loop most time will be spent in
 			try {			
 				while(running && (lastAction = in.readLine()) != null && !lastAction.equals(""));
@@ -143,7 +143,7 @@ public class MainServerThread implements Runnable {
 		}
 
 		System.out.println("Server: Accepting new Clients...");
-		while(!running )
+		while(!running  &&  clientList.size() < 3)
 			try {
 				ClientHandler toClient = new ClientHandler(serverSocket.accept());	
 				clientList.add(toClient);

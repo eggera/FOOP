@@ -14,14 +14,17 @@ import main.java.tuwien.ac.at.game.Level;
  */
 public class ClientThread implements Runnable, KeyListener{
 
-	Window window;
+	private Window window;
 	
 	private Socket socket;
 	
 	private PrintWriter out;
 	private ObjectInputStream in;
 	
-	private Level game;
+	private static int[] globalPoints;
+	
+	private Level level;
+	private boolean gameEnds;
 	
 	public ClientThread(Window w, String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
@@ -41,12 +44,16 @@ public class ClientThread implements Runnable, KeyListener{
 		
 		try {
 		Object o ;
-		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals(""))
+		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("") && !gameEnds)
 			{
 				if(o instanceof String)
 					processResponse((String) o);
-				if(o instanceof Level)
-					window.setLevel((Level) o); //TODO: global point stuff
+//				if(o instanceof Level)
+//					window.setLevel((Level) o); //TODO: global point stuff
+				if(level.isFinished()) {
+					levelEnd();
+				}
+				
 			}			
 		} catch (IOException e) {
 			System.err.println("client: Disconnected, " + e.getMessage());
@@ -62,14 +69,37 @@ public class ClientThread implements Runnable, KeyListener{
 		}
 	}
 	
+	public void levelEnd() {
+		calculateGlobalPoints();
+		
+		if(level.equals(Constants.LEVEL1))
+			setLevel(Constants.LEVEL2);
+		else
+			gameEnds = true;
+	}
+	
 	public void setLevel(Level game) {
-		this.game = game;
+		this.level = game;
 		window.setLevel(game);
+	}
+	
+	public static int[] getGlobalPoints() {
+		return globalPoints;
+	}
+	
+	private void calculateGlobalPoints() {
+		int[] points = level.getPlayerPoints();
+		
+		if(globalPoints == null)
+			globalPoints = new int[points.length];
+		
+		for(int i = 0; i < points.length; ++i)
+			globalPoints[i] += points[i];
 	}
 	
 	public void processResponse(String response) {
 		String[] directions = response.split(" ");
-		int	  [] dirs = new int[game.getNrOfPlayers()];
+		int	  [] dirs = new int[level.getNrOfPlayers()];
 		
 		int i;
 		for(i = 0; i < directions.length; ++i) {
@@ -80,11 +110,11 @@ public class ClientThread implements Runnable, KeyListener{
 				dirs[i] = Integer.parseInt(directions[i]);
 		}
 		// if there are less active players than visible
-		for(; i < game.getNrOfPlayers(); ++i) {
+		for(; i < level.getNrOfPlayers(); ++i) {
 			dirs[i] = -1;
 		}
 		
-		game.movePlayers(dirs);
+		level.movePlayers(dirs);
 		window.repaint();
 	}
 

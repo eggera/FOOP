@@ -9,9 +9,9 @@ ToDo:
 		
 
 	TICKETS:
-		1)  [open] disable player after he got eaten
-		2)  [open] end game after all points are consumed
-		3)  [open] load a new level after level ends
+		1)  [-done-] disable player after he got eaten
+		2)  [-done-] end game after all points are consumed
+		3)  [-done-] load a new level after level ends
 		4)  [open] switch colors after a fixed time
 		5)  [open] make more levels
 		6)  [open] maybe use a Logger for informations output
