@@ -28,6 +28,8 @@ public abstract class Level implements Serializable {
 	private boolean waitMsgEnabled;
 	private boolean errorMsgEnabled;
 	
+	protected boolean[] mouthOpen;
+	
 	protected int tick_duration;
 	public int getTickDuration()
 	{
@@ -285,9 +287,18 @@ public abstract class Level implements Serializable {
 					int rotation = players[i].getDirection() * 90; 
 
 					//^^... animated mouths laaaaaag
-					double mouth_angle =  90;//(players[i].getMouthAngle() + time / 14) % 180;
+					double mouth_angle;//(players[i].getMouthAngle() + time / 14) % 180;
 					//players[i].setMouthAngle(mouth_angle);
 					//mouth_angle = Math.abs(90 - mouth_angle);
+					
+					if(mouthOpen[i]) {
+						mouth_angle = 90;
+						mouthOpen[i] = false;
+					}
+					else {
+						mouth_angle = 10;
+						mouthOpen[i] = true;
+					}
 										
 					drawPacman(graphics,px,py,pacman_s,color,rotation, (int)mouth_angle);
 				}

@@ -17,6 +17,8 @@ public class ConstantLevel extends Level {
 		for(int i=0;i<startx.length;i++)
 			players[i] = new Player(i,startx[i],starty[i]);
 		
+		super.mouthOpen = new boolean[super.players.length];
+		
 //		super.points = new int[startx.length];
 //		for(int i=0;i<startx.length;i++)
 //			points[i] = 0;
@@ -33,7 +35,7 @@ public class ConstantLevel extends Level {
 		}
 
 		players[1].setDirection(Constants.UP);
-		players[2].setDirection(Constants.LEFT);	
+		players[2].setDirection(Constants.LEFT);
 	}
 	
 	
