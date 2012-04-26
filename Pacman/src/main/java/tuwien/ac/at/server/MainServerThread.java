@@ -44,6 +44,23 @@ public class MainServerThread implements Runnable {
 		}
 			
 		public void run() {
+			
+			// if the game is already running, the client connect is refused
+			if(running) {
+				
+				try {
+					send("running");
+				} catch (IOException e) {
+					System.err.println("Server: error when sending \"running\" to client "+clientID());
+				} 
+				try {
+					while( (lastAction = in.readLine()) != null  &&  !lastAction.equals(""));
+				} catch (IOException ex) {
+					System.err.println("Server: Client " + clientID() + ": " + ex.getMessage());
+				}
+				close();
+				return;
+			}
 				
 			System.out.println("Server: Client " + clientID() + " waiting for start...");
 			//wait till S or ..exit
@@ -151,7 +168,9 @@ public class MainServerThread implements Runnable {
 		while(!running  &&  clientList.size() < 3)
 			try {
 				ClientHandler toClient = new ClientHandler(serverSocket.accept());	
-				clientList.add(toClient);
+				if(!running)
+					clientList.add(toClient);
+				
 				new Thread(toClient).start();
 	
 			} catch (IOException e) {
@@ -185,7 +204,7 @@ public class MainServerThread implements Runnable {
 				}
 				
 			System.out.println("Server: Game running...");
-			try{			
+			try{
 				while(running)
 				{
 					String message = "";

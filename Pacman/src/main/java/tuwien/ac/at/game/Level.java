@@ -27,6 +27,7 @@ public abstract class Level implements Serializable {
 	private boolean startMsgEnabled;
 	private boolean waitMsgEnabled;
 	private boolean errorMsgEnabled;
+	private boolean gameRunningMsgEnabled;
 	
 	protected boolean[] mouthOpen;
 	
@@ -124,31 +125,39 @@ public abstract class Level implements Serializable {
 	// det
 	public void showMessageBox(int type) {
 		switch(type) {
-		case Constants.STARTMSG: startMsgEnabled = true;
-								 waitMsgEnabled  = false;
-								 break;
-		case Constants.WAITMSG:  waitMsgEnabled  = true;
-								 startMsgEnabled = false;
-								 break;
-		case Constants.ERRORMSG: errorMsgEnabled = true;
-								 startMsgEnabled = false;
-								 waitMsgEnabled  = false;
-								 break;
+		case Constants.STARTMSG: 	startMsgEnabled = true;
+								 	waitMsgEnabled  = false;
+								 	break;
+		case Constants.WAITMSG:  	waitMsgEnabled  = true;
+								 	startMsgEnabled = false;
+								 	break;
+		case Constants.ERRORMSG: 	errorMsgEnabled = true;
+								 	startMsgEnabled = false;
+								 	waitMsgEnabled  = false;
+								 	break;
+		case Constants.GAMERUNNING:	gameRunningMsgEnabled = true; 
+									errorMsgEnabled = false;
+									startMsgEnabled = false;
+									waitMsgEnabled  = false;
+									break;
 		}
 	}
 	
 	public void hideMessageBox(int type) {
 		switch(type) {
-		case Constants.STARTMSG: startMsgEnabled = false;
-								 break;
-		case Constants.WAITMSG:  waitMsgEnabled  = false;
-		 						 break;
-		case Constants.ERRORMSG: errorMsgEnabled = false;
-		 						 break;
-		case Constants.ALL:		 startMsgEnabled = false;
-								 waitMsgEnabled  = false;
-								 errorMsgEnabled = false;
-								 break;
+		case Constants.STARTMSG: 	startMsgEnabled = false;
+									break;
+		case Constants.WAITMSG:  	waitMsgEnabled  = false;
+		 							break;
+		case Constants.ERRORMSG: 	errorMsgEnabled = false;
+		 							break;
+		case Constants.GAMERUNNING:	gameRunningMsgEnabled = false;
+									break;
+		case Constants.ALL:		 	startMsgEnabled = false;
+									waitMsgEnabled  = false;
+									errorMsgEnabled = false;
+									gameRunningMsgEnabled = false;
+									break;
 		}
 	}
 	
@@ -336,6 +345,9 @@ public abstract class Level implements Serializable {
 		
 		else if(errorMsgEnabled) 
 			drawMessageBox(graphics, "No connection to server", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
+		
+		else if(gameRunningMsgEnabled)
+			drawMessageBox(graphics, "Game is running, try next time", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
 		
 	}
 	

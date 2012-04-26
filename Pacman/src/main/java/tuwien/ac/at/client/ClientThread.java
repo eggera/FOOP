@@ -28,11 +28,11 @@ public class ClientThread implements Runnable, KeyListener{
 	
 	public ClientThread(Window w, String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
-		
+
 		socket = new Socket(serverName, serverPort);
 		out    = new PrintWriter(socket.getOutputStream(), true);
 		in     = new ObjectInputStream(socket.getInputStream());
-		
+
 		window = w;
 
 		w.addKeyListener(this);
@@ -48,8 +48,7 @@ public class ClientThread implements Runnable, KeyListener{
 			{			
 				if(o instanceof String)
 					processResponse((String) o);
-//				if(o instanceof Level)
-//					window.setLevel((Level) o); //TODO: global point stuff
+
 				if(level.isFinished()) {
 					levelEnd();
 				}
@@ -112,6 +111,12 @@ public class ClientThread implements Runnable, KeyListener{
 		
 		if(response.equals("start")) {
 			window.hideMessageBox(Constants.ALL);
+			window.repaint();
+			return;
+		}
+		
+		if(response.equals("running")) {
+			window.showMessageBox(Constants.GAMERUNNING);
 			window.repaint();
 			return;
 		}
