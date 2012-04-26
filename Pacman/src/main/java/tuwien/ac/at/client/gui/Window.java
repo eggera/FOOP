@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import main.java.tuwien.ac.at.game.Constants;
 import main.java.tuwien.ac.at.game.Level;
 
 class GamePanel extends JPanel
@@ -14,10 +15,11 @@ class GamePanel extends JPanel
 	private static final long serialVersionUID = 1L;
 	
 	private Level level;
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
+		
 		if(level==null)
 		{
 			g.drawString("No Level set.",getWidth()/2,getHeight()/2);		
@@ -25,7 +27,6 @@ class GamePanel extends JPanel
 		else
 		{
 			level.draw(g);
-			//this.repaint();
 		}
 	}
 	
@@ -34,6 +35,14 @@ class GamePanel extends JPanel
 	public void setLevel(Level level)
 	{
 		this.level = level;
+	}
+	
+	public void showMessageBox(int type) {
+		level.showMessageBox(type);
+	}
+	
+	public void hideMessageBox(int type) {
+		level.hideMessageBox(type);
 	}
 }
 
@@ -44,6 +53,8 @@ public class Window extends JFrame {
 	
 	public Window(){
 		pan = new GamePanel();
+		pan.setLevel(Constants.CONSTANT_LEVEL1);
+		pan.showMessageBox(Constants.STARTMSG);
 		
 		add(pan);
 		setTitle("Distributed PacMan");
@@ -58,4 +69,13 @@ public class Window extends JFrame {
 	{
 		pan.setLevel(level);
 	}
+	
+	public void showMessageBox(int type) {
+		pan.showMessageBox(type);
+	}
+	
+	public void hideMessageBox(int type) {
+		pan.hideMessageBox(type);
+	}
+
 }

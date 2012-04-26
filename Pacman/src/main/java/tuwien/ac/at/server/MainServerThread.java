@@ -60,6 +60,11 @@ public class MainServerThread implements Runnable {
 			}	
 
 			System.out.println("Server: Client " + clientID() + " ready.");
+			try {
+				send("wait");
+			} catch (IOException e1) {
+				System.err.println("Server: Sending \"wait\" not possible for client "+clientID());
+			}
 			synchronized(clientList) {
 				ready = true;
 				boolean allReady = true; //in C# one could just write clientList.All((ch)=>ch.isReady) ;p 
@@ -172,6 +177,11 @@ public class MainServerThread implements Runnable {
 			for(ClientHandler ch : clientList)
 				synchronized(ch) {
 					ch.notifyAll();
+					try {
+						ch.send("start");
+					} catch (IOException e) {
+						System.err.println("Server: Error sending \"start\" to client "+ch.clientID());
+					}
 				}
 				
 			System.out.println("Server: Game running...");

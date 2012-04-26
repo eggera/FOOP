@@ -45,7 +45,7 @@ public class ClientThread implements Runnable, KeyListener{
 		try {
 		Object o ;
 		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("") && !gameEnds)
-			{
+			{			
 				if(o instanceof String)
 					processResponse((String) o);
 //				if(o instanceof Level)
@@ -72,8 +72,8 @@ public class ClientThread implements Runnable, KeyListener{
 	public void levelEnd() {
 		calculateGlobalPoints();
 		
-		if(level.equals(Constants.LEVEL1))
-			setLevel(Constants.LEVEL2);
+		if(level.equals(Constants.CONSTANT_LEVEL1))
+			setLevel(Constants.CONSTANT_LEVEL2);
 		else
 			gameEnds = true;
 	}
@@ -81,6 +81,10 @@ public class ClientThread implements Runnable, KeyListener{
 	public void setLevel(Level game) {
 		this.level = game;
 		window.setLevel(game);
+	}
+	
+	public Window getWindow() {
+		return this.window;
 	}
 	
 	public static int[] getGlobalPoints() {
@@ -98,6 +102,20 @@ public class ClientThread implements Runnable, KeyListener{
 	}
 	
 	public void processResponse(String response) {
+		System.out.println("response = "+response);
+		
+		if(response.equals("wait")) {
+			window.showMessageBox(Constants.WAITMSG);
+			window.repaint();
+			return;
+		}
+		
+		if(response.equals("start")) {
+			window.hideMessageBox(Constants.ALL);
+			window.repaint();
+			return;
+		}
+		
 		String[] directions = response.split(" ");
 		int	  [] dirs = new int[level.getNrOfPlayers()];
 		

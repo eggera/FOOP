@@ -49,8 +49,17 @@ public class Constants {
 
 	private static short startx2[] = {0,2,4};
 	private static short starty2[] = {0,0,2};
+	
+	public static int LEVEL1 = 1;
+	public static int LEVEL2 = 2;
+	public static int LEVEL3 = 3;
 
-	public static Level LEVEL1 = new ConstantLevel(field1,startx1,starty1);
-	public static Level LEVEL2 = new ConstantLevel(field2,startx2,starty2);
+	public static Level CONSTANT_LEVEL1 = new ConstantLevel(field1,startx1,starty1);
+	public static Level CONSTANT_LEVEL2 = new ConstantLevel(field2,startx2,starty2);
+	
+	public static final int STARTMSG = 0;
+	public static final int WAITMSG  = 1;
+	public static final int ERRORMSG = 2;
+	public static final int ALL		 = -1;
 
 }
