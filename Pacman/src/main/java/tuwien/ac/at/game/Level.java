@@ -5,9 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.Date;
-
 
 public abstract class Level implements Serializable {
 	
@@ -16,12 +15,21 @@ public abstract class Level implements Serializable {
 	protected transient LevelEndHandler onLevelEnd;
 	
 	protected Player[] players;
-	protected int[] points;
+//	protected int[] points;
 	
+	protected boolean end;
+
 	protected short field[][];
 
 	protected int field_w; //# of horizontal cells
-	protected int field_h; 
+	protected int field_h;
+	
+	private boolean startMsgEnabled;
+	private boolean waitMsgEnabled;
+	private boolean errorMsgEnabled;
+	private boolean gameRunningMsgEnabled;
+	
+	protected boolean[] mouthOpen;
 	
 	protected int tick_duration;
 	public int getTickDuration()
@@ -69,7 +77,7 @@ public abstract class Level implements Serializable {
 			
 			if((field[nx][ny] & Constants.F_POINT)!=0)
 			{
-				points[i]++;
+				players[i].addPoint();
 				field[nx][ny] ^= Constants.F_POINT;
 			}
 		}
@@ -84,8 +92,8 @@ public abstract class Level implements Serializable {
 						(/*( x  ==  players[j].getPosX() &&  y ==  players[j].getPosY()) ||*/
 					     (nx  ==  players[j].getPosX() && ny ==  players[j].getPosY())))
 				{
-					points[i]+=points[j];
-					points[j]=0;
+					players[i].addPoints(players[j].getPoints());
+					players[j].setPoints(0);
 					endGame();
 				}
 			}
@@ -95,18 +103,109 @@ public abstract class Level implements Serializable {
 	
 	public void endGame()
 	{
-		if(onLevelEnd != null)
-			onLevelEnd.gameEnd(points);
+//		if(onLevelEnd != null)
+//			onLevelEnd.gameEnd();
+		end = true;
 	}
 	
-
-	private long lastTime = System.currentTimeMillis();
+	// Determines whether this level is finished
+	// Either a player gets eaten or all points were consumed
+	public boolean isFinished() {
+		return end;
+	}
+	
+	// puts the points from all players into a point array
+	public int[] getPlayerPoints() {
+		int[] points = new int[players.length];
+		for(int i = 0; i < players.length; ++i)
+			points[i] = players[i].getPoints();
+		return points;
+	}
+	
+	// det
+	public void showMessageBox(int type) {
+		switch(type) {
+		case Constants.STARTMSG: 	startMsgEnabled = true;
+								 	waitMsgEnabled  = false;
+								 	break;
+		case Constants.WAITMSG:  	waitMsgEnabled  = true;
+								 	startMsgEnabled = false;
+								 	break;
+		case Constants.ERRORMSG: 	errorMsgEnabled = true;
+								 	startMsgEnabled = false;
+								 	waitMsgEnabled  = false;
+								 	break;
+		case Constants.GAMERUNNING:	gameRunningMsgEnabled = true; 
+									errorMsgEnabled = false;
+									startMsgEnabled = false;
+									waitMsgEnabled  = false;
+									break;
+		}
+	}
+	
+	public void hideMessageBox(int type) {
+		switch(type) {
+		case Constants.STARTMSG: 	startMsgEnabled = false;
+									break;
+		case Constants.WAITMSG:  	waitMsgEnabled  = false;
+		 							break;
+		case Constants.ERRORMSG: 	errorMsgEnabled = false;
+		 							break;
+		case Constants.GAMERUNNING:	gameRunningMsgEnabled = false;
+									break;
+		case Constants.ALL:		 	startMsgEnabled = false;
+									waitMsgEnabled  = false;
+									errorMsgEnabled = false;
+									gameRunningMsgEnabled = false;
+									break;
+		}
+	}
+	
+	
+	// draw the info screen, before starting
+	public void drawMessageBox(Graphics g, String msg, int x, int y, int width, int height) {
+		Graphics2D g2d = (Graphics2D) g;
+		
+		int padding = Math.min(width, height) / 12;
+		
+		x 		+= padding;
+		y 		+= padding;
+		width	-= padding * 2;
+		height 	-= padding * 2;
+		
+		int center_x = x + width  / 2;
+		int center_y = y + height / 2;
+		
+//		x = (int) g2d.getClipBounds().getCenterX() - x_bounds;
+//		y = (int) g2d.getClipBounds().getCenterY() - y_bounds;
+//		width  = x_bounds * 2;
+//		height = y_bounds * 2;
+		
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(x, y, width, height);
+		g2d.setColor(Color.BLUE);
+		g2d.setStroke(new BasicStroke(3));
+		g2d.drawRect(x, y, width, height);
+		
+		g2d.setColor(new Color(50,30,200));
+		Font font = new Font(Font.SERIF, Font.BOLD, Math.max(12, width/20));
+		g2d.setFont(font);
+		Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(msg, g2d);
+		g2d.drawString(msg, center_x - (int)bounds.getWidth()/2
+							  , center_y + (int)bounds.getHeight()/2);
+	}
+	
+	//eating animation controlling
+//	private long lastTime = System.currentTimeMillis();
+	
 	public void draw(Graphics g){
 		
-		long tmp = System.currentTimeMillis();
-		double time = tmp - lastTime;
-		lastTime = tmp;
-		
+		/*
+		 * TODO mouth animation or delete plzzz
+		 */
+//		long currTime = System.currentTimeMillis();
+//		double time   = currTime - lastTime;
+//		lastTime      = currTime;
 		
 		Graphics2D graphics = (Graphics2D) g;
 
@@ -116,15 +215,17 @@ public abstract class Level implements Serializable {
 		graphics.setColor(Color.black);
 		graphics.fillRect(0, 0, width, height);	
 		
+		
 		//"Constants"
 		//Pointlist stuff
 		int pointlist_border_t = 3; //outer border of layout list
 		int font_s = Math.max(12,Math.min(width,height) / 16); //since I wanted the layout to "derive" from the fontsize the order got a bit ugly
 		
+
 		graphics.setFont( new Font("Arial", Font.PLAIN, font_s));
 		int font_h = graphics.getFontMetrics().getHeight();
 		int pointlist_w = graphics.getFontMetrics().stringWidth("00000") + font_h + 2 * pointlist_border_t;
-		
+
 		width -= pointlist_w;
 		
 		//Field Constants
@@ -133,12 +234,13 @@ public abstract class Level implements Serializable {
 				              (height - wall_t) / field_h);
 		int pacman_s = (cell_s - wall_t) *1/2;  
 		int food_s =  pacman_s / 10;
+		
 
 		//everything is square so there is  a padding to the left or right
 		//when the drawing area is not a square
-		int pad_x = (width  - cell_s * field_w) / 2;
+		int pad_x = (width  - cell_s * field_w) / 2 + 10;
 		int pad_y = (height - cell_s * field_h) / 2;
-	
+		
 				
 		//draw Walls
 		graphics.setColor(Color.white);
@@ -164,15 +266,23 @@ public abstract class Level implements Serializable {
 					graphics.drawLine(x ,y ,x ,ye);
 			}
 	
+		boolean foodExists = false;
+		
 		//draw Food
 		graphics.setColor(Color.white);
 		if(food_s>0) 	
 			for(int i=0; i< field_w;i++)
 				for(int j=0;j<field_h;j++)
-					if((field[i][j] & Constants.F_POINT) != 0)
+					if((field[i][j] & Constants.F_POINT) != 0) {
 						graphics.fillRect(pad_x + i * cell_s + (cell_s-food_s)/2,
 								          pad_y + j * cell_s + (cell_s-food_s)/2, 
 								          food_s, food_s);
+						
+						foodExists = true;
+					}
+		
+		if(!foodExists) 
+			endGame();
 			
 		
 		//draw Pacmans
@@ -186,9 +296,18 @@ public abstract class Level implements Serializable {
 					int rotation = players[i].getDirection() * 90; 
 
 					//^^... animated mouths laaaaaag
-					double mouth_angle =  90;//(players[i].getMouthAngle() + time / 14) % 180;
+					double mouth_angle;//(players[i].getMouthAngle() + time / 14) % 180;
 					//players[i].setMouthAngle(mouth_angle);
 					//mouth_angle = Math.abs(90 - mouth_angle);
+					
+					if(mouthOpen[i]) {
+						mouth_angle = 90;
+						mouthOpen[i] = false;
+					}
+					else {
+						mouth_angle = 10;
+						mouthOpen[i] = true;
+					}
 										
 					drawPacman(graphics,px,py,pacman_s,color,rotation, (int)mouth_angle);
 				}
@@ -202,12 +321,12 @@ public abstract class Level implements Serializable {
 			
 		for(int i=0; i< players.length; i++)
 		{
-			String points = String.valueOf(this.points[i]);
+			String points = String.valueOf(players[i].getPoints());
 			int font_w = graphics.getFontMetrics().stringWidth(points);
 			int line_y = pointlist_y + font_h  * i;
 			
 			graphics.setColor(Color.white);
-			graphics.drawString(points, pointlist_x + pointlist_w - font_w - pointlist_border_t, line_y + font_b);
+			graphics.drawString(points, pointlist_x + pointlist_w - font_w - pointlist_border_t - 10, line_y + font_b);
 		
 			Color color = Constants.COLORS[players[i].getColor()];
 			
@@ -215,6 +334,20 @@ public abstract class Level implements Serializable {
 			
 			drawPacman(graphics, pointlist_x + pointlist_border_t, line_y, font_h, color, rotation, 90);
 		}
+		
+		// draw message box if applicable
+		
+		if(startMsgEnabled)
+			drawMessageBox(graphics, "Press \"S\" to start", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
+		
+		else if(waitMsgEnabled) 
+			drawMessageBox(graphics, "Wait for players to connect ...", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
+		
+		else if(errorMsgEnabled) 
+			drawMessageBox(graphics, "No connection to server", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
+		
+		else if(gameRunningMsgEnabled)
+			drawMessageBox(graphics, "Game is running, try next time", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
 		
 	}
 	

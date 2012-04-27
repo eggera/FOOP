@@ -45,8 +45,25 @@ public class MainServerThread implements Runnable {
 			
 		public void run() {
 			
+			// if the game is already running, the client connect is refused
+			if(running) {
+				
+				try {
+					send("running");
+				} catch (IOException e) {
+					System.err.println("Server: error when sending \"running\" to client "+clientID());
+				} 
+				try {
+					while( (lastAction = in.readLine()) != null  &&  !lastAction.equals(""));
+				} catch (IOException ex) {
+					System.err.println("Server: Client " + clientID() + ": " + ex.getMessage());
+				}
+				close();
+				return;
+			}
+				
 			System.out.println("Server: Client " + clientID() + " waiting for start...");
-		//wait till S or ..exit
+			//wait till S or ..exit
 			try	{
 				while( (lastAction = in.readLine()) != null && !lastAction.equals("") && !lastAction.equals("S"));
 			}catch(Exception ex) {
@@ -60,6 +77,11 @@ public class MainServerThread implements Runnable {
 			}	
 
 			System.out.println("Server: Client " + clientID() + " ready.");
+			try {
+				send("wait");
+			} catch (IOException e1) {
+				System.err.println("Server: Sending \"wait\" not possible for client "+clientID());
+			}
 			synchronized(clientList) {
 				ready = true;
 				boolean allReady = true; //in C# one could just write clientList.All((ch)=>ch.isReady) ;p 
@@ -67,7 +89,7 @@ public class MainServerThread implements Runnable {
 					if(!ch.isReady())
 						allReady = false;	
 			
-				if(allReady && clientList.size() == 3 && !running){
+				if(allReady && clientList.size() <= 3 && !running){
 					System.out.println("Server: Client " + clientID() + " is beginning the game.");
 					running = true;
 					serverTimerThread = new ServerTimer();
@@ -81,7 +103,7 @@ public class MainServerThread implements Runnable {
 					} catch (InterruptedException ign) { } //as long as we are not running we keep waiting
 			}	
 
-			System.out.println("Server: Client " + clientID() + "running...");
+			System.out.println("Server: Client " + clientID() + " running...");
 			//_THE_ basic reading loop most time will be spent in
 			try {			
 				while(running && (lastAction = in.readLine()) != null && !lastAction.equals(""));
@@ -143,10 +165,12 @@ public class MainServerThread implements Runnable {
 		}
 
 		System.out.println("Server: Accepting new Clients...");
-		while(!running )
+		while(!running  &&  clientList.size() < 3)
 			try {
 				ClientHandler toClient = new ClientHandler(serverSocket.accept());	
-				clientList.add(toClient);
+				if(!running)
+					clientList.add(toClient);
+				
 				new Thread(toClient).start();
 	
 			} catch (IOException e) {
@@ -172,10 +196,15 @@ public class MainServerThread implements Runnable {
 			for(ClientHandler ch : clientList)
 				synchronized(ch) {
 					ch.notifyAll();
+					try {
+						ch.send("start");
+					} catch (IOException e) {
+						System.err.println("Server: Error sending \"start\" to client "+ch.clientID());
+					}
 				}
 				
 			System.out.println("Server: Game running...");
-			try{			
+			try{
 				while(running)
 				{
 					String message = "";
@@ -190,8 +219,8 @@ public class MainServerThread implements Runnable {
 					Thread.sleep(PacManServer.GAME_SPEED);
 				}
 				
-
 				System.out.println("Server: Game ended.");
+				
 			} catch(Exception ex){
 				System.err.println("Server: Game ended unexpectedly:\n" + ex.getMessage());
 			}

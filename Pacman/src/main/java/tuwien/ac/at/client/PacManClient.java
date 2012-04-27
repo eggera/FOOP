@@ -21,8 +21,10 @@ public class PacManClient {
 	 */
 	public static void main(String[] args) {
 		//connect to server
+		
+		Window w = new Window();
+		
 		try {
-			Window w = new Window();
 			
 			clientThread = new ClientThread(w,
 								PacManServer.SERVER_ADRESS, 
@@ -30,13 +32,15 @@ public class PacManClient {
 							);
 
 			
-			clientThread.setLevel(Constants.LEVEL2);
+			clientThread.setLevel(Constants.CONSTANT_LEVEL1);
 			
 			new Thread(clientThread).start();
 			
 		} catch (UnknownHostException e) {
+			w.showMessageBox(Constants.ERRORMSG);
 			System.err.println("client: UnknownHostException, "+e.getMessage());
 		} catch (IOException e) {
+			w.showMessageBox(Constants.ERRORMSG);
 			System.err.println("client: IOException, "+e.getMessage());
 		}		
 	}

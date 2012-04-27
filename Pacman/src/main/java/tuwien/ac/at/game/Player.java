@@ -9,6 +9,7 @@ class Player implements Serializable {
 	//def. 
 	private int   direction; //0..3 , 0=RIGHT , 1=TOP,.. if change watch out for draw
 	private int   color;
+	private int   points;
 	private short posX;
 	private short posY;
 	private double   mouth_angle;
@@ -46,6 +47,23 @@ class Player implements Serializable {
 	public void setColor(int color) {
 		this.color = color;
 	}
+	
+	public int getPoints() {
+		return points;
+	}
+	
+	public void addPoint() {
+		this.points++;
+	}
+	
+	public void addPoints(int points) {
+		this.points += points;
+	}
+	
+	public void setPoints(int points) {
+		this.points = points;
+	}
+	
 	public int getDirection() {
 		return direction;
 	}

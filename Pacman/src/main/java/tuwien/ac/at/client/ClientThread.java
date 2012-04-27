@@ -14,22 +14,25 @@ import main.java.tuwien.ac.at.game.Level;
  */
 public class ClientThread implements Runnable, KeyListener{
 
-	Window window;
+	private Window window;
 	
 	private Socket socket;
 	
 	private PrintWriter out;
 	private ObjectInputStream in;
 	
-	private Level game;
+	private static int[] globalPoints;
 	
-	public ClientThread(Window w,String serverName, int serverPort) 
+	private Level level;
+	private boolean gameEnds;
+	
+	public ClientThread(Window w, String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
-		
+
 		socket = new Socket(serverName, serverPort);
 		out    = new PrintWriter(socket.getOutputStream(), true);
 		in     = new ObjectInputStream(socket.getInputStream());
-		
+
 		window = w;
 
 		w.addKeyListener(this);
@@ -41,14 +44,18 @@ public class ClientThread implements Runnable, KeyListener{
 		
 		try {
 		Object o ;
-		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("")) {
+		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("") && !gameEnds)
+			{			
 				if(o instanceof String)
 					processResponse((String) o);
-				if(o instanceof Level)
-					window.setLevel((Level) o); //TODO: global point stuff
+
+				if(level.isFinished()) {
+					levelEnd();
+				}
+				
 			}			
 		} catch (IOException e) {
-			System.err.println("client: Disconnected, "+e.getMessage());
+			System.err.println("client: Disconnected, " + e.getMessage());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -61,14 +68,61 @@ public class ClientThread implements Runnable, KeyListener{
 		}
 	}
 	
+	public void levelEnd() {
+		calculateGlobalPoints();
+		
+		if(level.equals(Constants.CONSTANT_LEVEL1))
+			setLevel(Constants.CONSTANT_LEVEL2);
+		else
+			gameEnds = true;
+	}
+	
 	public void setLevel(Level game) {
-		this.game = game;
+		this.level = game;
 		window.setLevel(game);
 	}
 	
+	public Window getWindow() {
+		return this.window;
+	}
+	
+	public static int[] getGlobalPoints() {
+		return globalPoints;
+	}
+	
+	private void calculateGlobalPoints() {
+		int[] points = level.getPlayerPoints();
+		
+		if(globalPoints == null)
+			globalPoints = new int[points.length];
+		
+		for(int i = 0; i < points.length; ++i)
+			globalPoints[i] += points[i];
+	}
+	
 	public void processResponse(String response) {
+		System.out.println("response = "+response);
+		
+		if(response.equals("wait")) {
+			window.showMessageBox(Constants.WAITMSG);
+			window.repaint();
+			return;
+		}
+		
+		if(response.equals("start")) {
+			window.hideMessageBox(Constants.ALL);
+			window.repaint();
+			return;
+		}
+		
+		if(response.equals("running")) {
+			window.showMessageBox(Constants.GAMERUNNING);
+			window.repaint();
+			return;
+		}
+		
 		String[] directions = response.split(" ");
-		int	  [] dirs = new int[game.getNrOfPlayers()];
+		int	  [] dirs = new int[level.getNrOfPlayers()];
 		
 		int i;
 		for(i = 0; i < directions.length; ++i) {
@@ -79,11 +133,11 @@ public class ClientThread implements Runnable, KeyListener{
 				dirs[i] = Integer.parseInt(directions[i]);
 		}
 		// if there are less active players than visible
-		for(; i < game.getNrOfPlayers(); ++i) {
+		for(; i < level.getNrOfPlayers(); ++i) {
 			dirs[i] = -1;
 		}
 		
-		game.movePlayers(dirs);
+		level.movePlayers(dirs);
 		window.repaint();
 	}
 
@@ -112,9 +166,9 @@ public class ClientThread implements Runnable, KeyListener{
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {	}
+	public void keyReleased(KeyEvent arg0){   }
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {	}
+	public void keyTyped(KeyEvent arg0)   {   }
 	
 }
