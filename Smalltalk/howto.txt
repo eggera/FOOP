@@ -1,0 +1,9 @@
+
+
+drag and drop the .st file into squeak.
+
+
+then do in a workspace:
+
+v := PacmanMain new bounds: (40@40 extent: 300@300).
+v openInWorld.
