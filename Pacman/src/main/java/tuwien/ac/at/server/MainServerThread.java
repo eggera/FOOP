@@ -185,7 +185,7 @@ public class MainServerThread implements Runnable {
 	
 	//I really really want to put this thread into here-here, but i have no good idea on how to prevent
 	//the last serverSocker.accept waiting without disabling recoverability when the last player presses esc instead of start
-	//..the really really means about 20 loc less^^
+	//..which could mean about 20 loc less^^
 	class ServerTimer implements Runnable {
 
 		public ServerTimer() {}
@@ -197,7 +197,7 @@ public class MainServerThread implements Runnable {
 				synchronized(ch) {
 					ch.notifyAll();
 					try {
-						ch.send("start");
+						ch.send("start " + clientList.indexOf(ch));
 					} catch (IOException e) {
 						System.err.println("Server: Error sending \"start\" to client "+ch.clientID());
 					}

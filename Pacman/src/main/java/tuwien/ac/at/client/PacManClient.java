@@ -37,10 +37,10 @@ public class PacManClient {
 			new Thread(clientThread).start();
 			
 		} catch (UnknownHostException e) {
-			w.showMessageBox(Constants.ERRORMSG);
+			w.showMessageBox("Error. Unknown host.");
 			System.err.println("client: UnknownHostException, "+e.getMessage());
 		} catch (IOException e) {
-			w.showMessageBox(Constants.ERRORMSG);
+			w.showMessageBox("Error. IO Exception.");
 			System.err.println("client: IOException, "+e.getMessage());
 		}		
 	}

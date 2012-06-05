@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
@@ -24,12 +25,7 @@ public abstract class Level implements Serializable {
 	protected int field_w; //# of horizontal cells
 	protected int field_h;
 	
-	private boolean startMsgEnabled;
-	private boolean waitMsgEnabled;
-	private boolean errorMsgEnabled;
-	private boolean gameRunningMsgEnabled;
-	
-	protected boolean[] mouthOpen;
+	private String message = null;
 	
 	protected int tick_duration;
 	public int getTickDuration()
@@ -123,42 +119,12 @@ public abstract class Level implements Serializable {
 	}
 	
 	// det
-	public void showMessageBox(int type) {
-		switch(type) {
-		case Constants.STARTMSG: 	startMsgEnabled = true;
-								 	waitMsgEnabled  = false;
-								 	break;
-		case Constants.WAITMSG:  	waitMsgEnabled  = true;
-								 	startMsgEnabled = false;
-								 	break;
-		case Constants.ERRORMSG: 	errorMsgEnabled = true;
-								 	startMsgEnabled = false;
-								 	waitMsgEnabled  = false;
-								 	break;
-		case Constants.GAMERUNNING:	gameRunningMsgEnabled = true; 
-									errorMsgEnabled = false;
-									startMsgEnabled = false;
-									waitMsgEnabled  = false;
-									break;
-		}
+	public void showMessageBox(String message) {
+		this.message = message;
 	}
 	
-	public void hideMessageBox(int type) {
-		switch(type) {
-		case Constants.STARTMSG: 	startMsgEnabled = false;
-									break;
-		case Constants.WAITMSG:  	waitMsgEnabled  = false;
-		 							break;
-		case Constants.ERRORMSG: 	errorMsgEnabled = false;
-		 							break;
-		case Constants.GAMERUNNING:	gameRunningMsgEnabled = false;
-									break;
-		case Constants.ALL:		 	startMsgEnabled = false;
-									waitMsgEnabled  = false;
-									errorMsgEnabled = false;
-									gameRunningMsgEnabled = false;
-									break;
-		}
+	public void hideMessageBox() {
+		message = null;
 	}
 	
 	
@@ -198,20 +164,23 @@ public abstract class Level implements Serializable {
 	//eating animation controlling
 //	private long lastTime = System.currentTimeMillis();
 	
+	
+	
 	public void draw(Graphics g){
 		
 		/*
-		 * TODO mouth animation or delete plzzz
-		 */
-//		long currTime = System.currentTimeMillis();
-//		double time   = currTime - lastTime;
-//		lastTime      = currTime;
+		 * the necessary time data for the (infeasible) smooth mouth animation
+		 *
+		long currTime = System.currentTimeMillis();
+		double time   = currTime - lastTime;
+		lastTime      = currTime; */
 		
 		Graphics2D graphics = (Graphics2D) g;
 
 		int width  = (int) graphics.getClipBounds().getWidth();
 		int height = (int) graphics.getClipBounds().getHeight();
 
+		
 		graphics.setColor(Color.black);
 		graphics.fillRect(0, 0, width, height);	
 		
@@ -285,8 +254,8 @@ public abstract class Level implements Serializable {
 			endGame();
 			
 		
-		//draw Pacmans
-		if(pacman_s>0)
+		//draw Pacmans  
+		if(pacman_s>0) //to prevent crash from tiny window
 			for(int i=0; i < players.length; i++)
 				{
 					int px = pad_x + players[i].getPosX() * cell_s + (cell_s - pacman_s)/2;
@@ -295,20 +264,18 @@ public abstract class Level implements Serializable {
 					Color color = Constants.COLORS[players[i].getColor()];				
 					int rotation = players[i].getDirection() * 90; 
 
-					//^^... animated mouths laaaaaag
-					double mouth_angle;//(players[i].getMouthAngle() + time / 14) % 180;
+					//^^... smoothly animated mouths laaaaaag
+					double mouth_angle = players[i].getMouthAngle();
+					//mouth_angle = (players[i].getMouthAngle() + time / 14) % 180;
 					//players[i].setMouthAngle(mouth_angle);
 					//mouth_angle = Math.abs(90 - mouth_angle);
 					
-					if(mouthOpen[i]) {
-						mouth_angle = 90;
-						mouthOpen[i] = false;
-					}
-					else {
+					if(mouth_angle == 10d) 
 						mouth_angle = 10;
-						mouthOpen[i] = true;
-					}
-										
+					else
+						mouth_angle = 90;
+					players[i].setMouthAngle(mouth_angle);	
+					
 					drawPacman(graphics,px,py,pacman_s,color,rotation, (int)mouth_angle);
 				}
 
@@ -337,18 +304,8 @@ public abstract class Level implements Serializable {
 		
 		// draw message box if applicable
 		
-		if(startMsgEnabled)
-			drawMessageBox(graphics, "Press \"S\" to start", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
-		
-		else if(waitMsgEnabled) 
-			drawMessageBox(graphics, "Wait for players to connect ...", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
-		
-		else if(errorMsgEnabled) 
-			drawMessageBox(graphics, "No connection to server", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
-		
-		else if(gameRunningMsgEnabled)
-			drawMessageBox(graphics, "Game is running, try next time", pad_x, pad_y, cell_s * field_w, cell_s * field_h);
-		
+		if(message != null)
+			drawMessageBox(graphics, message, pad_x, pad_y, cell_s * field_w, cell_s * field_h);		
 	}
 	
 	//px,py as the topleft corner

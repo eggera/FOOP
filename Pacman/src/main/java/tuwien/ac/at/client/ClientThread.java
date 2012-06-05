@@ -22,6 +22,7 @@ public class ClientThread implements Runnable, KeyListener{
 	private ObjectInputStream in;
 	
 	private static int[] globalPoints;
+	private int player_index;
 	
 	private Level level;
 	private boolean gameEnds;
@@ -49,9 +50,8 @@ public class ClientThread implements Runnable, KeyListener{
 				if(o instanceof String)
 					processResponse((String) o);
 
-				if(level.isFinished()) {
+				if(level.isFinished()) 
 					levelEnd();
-				}
 				
 			}			
 		} catch (IOException e) {
@@ -103,20 +103,24 @@ public class ClientThread implements Runnable, KeyListener{
 	public void processResponse(String response) {
 		System.out.println("response = "+response);
 		
-		if(response.equals("wait")) {
-			window.showMessageBox(Constants.WAITMSG);
+		if(response.startsWith("wait")) {
+			window.showMessageBox("Waiting for other players.");
 			window.repaint();
 			return;
 		}
 		
-		if(response.equals("start")) {
-			window.hideMessageBox(Constants.ALL);
+		if(response.startsWith("start")) { 
+			//start is followed by the index "start 1"
+			//I added this to allow a better "who eats who display"
+			//and for allowing an end message like "You won".
+			this.player_index = Integer.parseInt(response.replaceFirst("start ", ""));
+			window.showMessageBox(null);
 			window.repaint();
 			return;
 		}
 		
-		if(response.equals("running")) {
-			window.showMessageBox(Constants.GAMERUNNING);
+		if(response.startsWith("running")) {
+			window.showMessageBox("Game is already running, better luck next time.");
 			window.repaint();
 			return;
 		}
