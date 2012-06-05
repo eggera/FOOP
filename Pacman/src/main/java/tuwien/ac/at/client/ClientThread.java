@@ -5,53 +5,45 @@ import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.*;
 
-import main.java.tuwien.ac.at.client.gui.Window;
-import main.java.tuwien.ac.at.game.Constants;
-import main.java.tuwien.ac.at.game.Level;
 
+import main.java.tuwien.ac.at.game.Constants;
+import main.java.tuwien.ac.at.game.Game;
 /**
  * This class contains the game's client logic
  */
 public class ClientThread implements Runnable, KeyListener{
 
-	private Window window;
 	
 	private Socket socket;
 	
 	private PrintWriter out;
 	private ObjectInputStream in;
 	
-	private static int[] globalPoints;
-	private int player_index;
+	private Game game;
 	
-	private Level level;
-	private boolean gameEnds;
-	
-	public ClientThread(Window w, String serverName, int serverPort) 
+	public ClientThread(Game g, String serverName, int serverPort) 
 						throws UnknownHostException, IOException {
 
 		socket = new Socket(serverName, serverPort);
 		out    = new PrintWriter(socket.getOutputStream(), true);
 		in     = new ObjectInputStream(socket.getInputStream());
 
-		window = w;
-
-		w.addKeyListener(this);
+		game   = g;
 	}
+	
+	
 	
 	public void run() {
 		
 		System.out.println("Press \"S\" to start");
+		game.showMessageBox("Press S to start.");
 		
 		try {
 		Object o ;
-		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals("") && !gameEnds)
+		while(socket.isConnected() && (o = in.readObject()) != null && !o.equals(""))
 			{			
 				if(o instanceof String)
 					processResponse((String) o);
-
-				if(level.isFinished()) 
-					levelEnd();
 				
 			}			
 		} catch (IOException e) {
@@ -59,6 +51,7 @@ public class ClientThread implements Runnable, KeyListener{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		//catch(Exception ign){ign.printStackTrace();}
 		finally {
 			try	{	
 				socket.close();
@@ -67,82 +60,53 @@ public class ClientThread implements Runnable, KeyListener{
 			System.exit(0);
 		}
 	}
-	
-	public void levelEnd() {
-		calculateGlobalPoints();
-		
-		if(level.equals(Constants.CONSTANT_LEVEL1))
-			setLevel(Constants.CONSTANT_LEVEL2);
-		else
-			gameEnds = true;
-	}
-	
-	public void setLevel(Level game) {
-		this.level = game;
-		window.setLevel(game);
-	}
-	
-	public Window getWindow() {
-		return this.window;
-	}
-	
-	public static int[] getGlobalPoints() {
-		return globalPoints;
-	}
-	
-	private void calculateGlobalPoints() {
-		int[] points = level.getPlayerPoints();
-		
-		if(globalPoints == null)
-			globalPoints = new int[points.length];
-		
-		for(int i = 0; i < points.length; ++i)
-			globalPoints[i] += points[i];
-	}
-	
+
 	public void processResponse(String response) {
 		System.out.println("response = "+response);
-		
+
+		game.repaint();
 		if(response.startsWith("wait")) {
-			window.showMessageBox("Waiting for other players.");
-			window.repaint();
+			game.showMessageBox("Waiting for other players.");
 			return;
 		}
 		
 		if(response.startsWith("start")) { 
-			//start is followed by the index "start 1"
+			//start playerIndex #ofPlayers 
 			//I added this to allow a better "who eats who display"
-			//and for allowing an end message like "You won".
-			this.player_index = Integer.parseInt(response.replaceFirst("start ", ""));
-			window.showMessageBox(null);
-			window.repaint();
+			//and for an end message like "You won".	
+			//the #ofPlayers are there to remove extra players
+			
+			String[] pars = response.split(" ");
+			game.startGame(Integer.parseInt(pars[1]),Integer.parseInt(pars[2])); 
+			game.showMessageBox(null);
 			return;
 		}
 		
 		if(response.startsWith("running")) {
-			window.showMessageBox("Game is already running, better luck next time.");
-			window.repaint();
+			game.showMessageBox("Game is already running, better luck next time.");
 			return;
 		}
 		
-		String[] directions = response.split(" ");
-		int	  [] dirs = new int[level.getNrOfPlayers()];
-		
-		int i;
-		for(i = 0; i < directions.length; ++i) {
+		if(game.isRunning())
+		{
+			String[] directions = response.split(" ");
+			int	  [] dirs = new int[game.getNrOfPlayers()];
 			
-			if(directions[i].equals("S"))
+			int i;
+			for(i = 0; i < directions.length; ++i) {
+				
+				if(directions[i].equals("S"))
+					dirs[i] = -1;
+				else
+					dirs[i] = Integer.parseInt(directions[i]);
+			}
+			// if there are less active players than visible
+			for(; i < game.getNrOfPlayers(); ++i) {
 				dirs[i] = -1;
-			else
-				dirs[i] = Integer.parseInt(directions[i]);
+			}
+			
+			game.movePlayers(dirs);
 		}
-		// if there are less active players than visible
-		for(; i < level.getNrOfPlayers(); ++i) {
-			dirs[i] = -1;
-		}
-		
-		level.movePlayers(dirs);
-		window.repaint();
 	}
 
 	@Override

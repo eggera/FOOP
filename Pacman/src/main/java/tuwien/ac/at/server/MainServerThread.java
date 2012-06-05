@@ -89,7 +89,7 @@ public class MainServerThread implements Runnable {
 					if(!ch.isReady())
 						allReady = false;	
 			
-				if(allReady && clientList.size() <= 3 && !running){
+				if(allReady  && !running){
 					System.out.println("Server: Client " + clientID() + " is beginning the game.");
 					running = true;
 					serverTimerThread = new ServerTimer();
@@ -165,9 +165,9 @@ public class MainServerThread implements Runnable {
 		}
 
 		System.out.println("Server: Accepting new Clients...");
-		while(!running  &&  clientList.size() < 3)
+		while(!running)
 			try {
-				ClientHandler toClient = new ClientHandler(serverSocket.accept());	
+				ClientHandler toClient = new ClientHandler(serverSocket.accept());
 				if(!running)
 					clientList.add(toClient);
 				
@@ -197,7 +197,7 @@ public class MainServerThread implements Runnable {
 				synchronized(ch) {
 					ch.notifyAll();
 					try {
-						ch.send("start " + clientList.indexOf(ch));
+						ch.send("start " + clientList.indexOf(ch) + " " + clientList.size());
 					} catch (IOException e) {
 						System.err.println("Server: Error sending \"start\" to client "+ch.clientID());
 					}

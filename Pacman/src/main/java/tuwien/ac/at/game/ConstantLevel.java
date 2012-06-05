@@ -9,6 +9,9 @@ public class ConstantLevel extends Level {
 	
 	public ConstantLevel(short field[][],short startx[],short starty[])
 	{
+		super.color_span = 10;
+		super.color_time = 0;
+		
 		super.field = field;
 		super.field_w = field.length;
 		super.field_h = field[0].length; 
@@ -36,5 +39,20 @@ public class ConstantLevel extends Level {
 		players[2].setDirection(Constants.LEFT);
 	}
 	
-	
+	public ConstantLevel(ConstantLevel other, int maxplayers)
+	{
+		super.color_span = other.color_span;
+		super.color_time = other.color_time;
+		
+		super.field = other.field;
+		super.field_w = other.field.length;
+		super.field_h = other.field[0].length; 
+		
+		maxplayers = Math.min(other.players.length, maxplayers);
+
+		super.players = new Player[maxplayers];
+		for(int i=0;i<maxplayers;i++)
+			players[i] = new Player(i,other.players[i].getPosX(),other.players[i].getPosY());
+
+	}
 }

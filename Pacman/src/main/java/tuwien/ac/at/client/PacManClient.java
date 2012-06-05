@@ -3,8 +3,9 @@ package main.java.tuwien.ac.at.client;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import main.java.tuwien.ac.at.client.gui.Window;
-import main.java.tuwien.ac.at.game.Constants;
+import javax.swing.JFrame;
+
+import main.java.tuwien.ac.at.game.Game;
 
 import main.java.tuwien.ac.at.server.PacManServer;
 
@@ -22,25 +23,32 @@ public class PacManClient {
 	public static void main(String[] args) {
 		//connect to server
 		
-		Window w = new Window();
+		JFrame w = new JFrame();
+
+		Game game = new Game();
+		w.add(game);
 		
+		w.setTitle("Distributed PacMan");
+		w.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        w.setSize(400, 400);
+        w.setVisible(true);
+        w.setResizable(true);
+        
 		try {
 			
-			clientThread = new ClientThread(w,
+			clientThread = new ClientThread(game,
 								PacManServer.SERVER_ADRESS, 
-								PacManServer.SERVER_PORT
-							);
+								PacManServer.SERVER_PORT );
 
-			
-			clientThread.setLevel(Constants.CONSTANT_LEVEL1);
+			w.addKeyListener(clientThread);
 			
 			new Thread(clientThread).start();
 			
 		} catch (UnknownHostException e) {
-			w.showMessageBox("Error. Unknown host.");
+			game.showMessageBox("Error. Unknown host.");
 			System.err.println("client: UnknownHostException, "+e.getMessage());
 		} catch (IOException e) {
-			w.showMessageBox("Error. IO Exception.");
+			game.showMessageBox("Error. IO Exception.");
 			System.err.println("client: IOException, "+e.getMessage());
 		}		
 	}

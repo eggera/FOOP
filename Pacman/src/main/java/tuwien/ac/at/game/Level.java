@@ -2,21 +2,14 @@ package main.java.tuwien.ac.at.game;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 public abstract class Level implements Serializable {
 	
 	private static final long serialVersionUID = -5709916090882154480L;
-
-	protected transient LevelEndHandler onLevelEnd;
 	
 	protected Player[] players;
-//	protected int[] points;
 	
 	protected boolean end;
 
@@ -25,16 +18,18 @@ public abstract class Level implements Serializable {
 	protected int field_w; //# of horizontal cells
 	protected int field_h;
 	
-	private String message = null;
-	
 	protected int tick_duration;
 	public int getTickDuration()
 	{
 		return tick_duration;
 	}
-	
+	protected int color_span;
+	protected int color_time;
+		
 	public void movePlayers(int directions[]) 
 	{		
+		color_time = (color_time + 1) % color_span;
+		
 		       //Right,Up,Left,Down
 		int dirx[] = new int[]{1, 0,-1,0};
 		int diry[] = new int[]{0,-1, 0,1};		
@@ -43,6 +38,9 @@ public abstract class Level implements Serializable {
 	
 		for(int i=0;i<players.length;i++)
 		{
+			if(color_time == 0)
+				players[i].setColor((players[i].getColor() + 1)%players.length);
+			
 			// no more active players
 			if(directions[i] == -1)
 				continue;
@@ -78,6 +76,13 @@ public abstract class Level implements Serializable {
 			}
 		}
 		
+		boolean noFood = true; //there is no food left?, end the game
+		for(int i=0; i< field_w && noFood;i++)
+			for(int j=0;j<field_h;j++)
+				if((field[i][j] & Constants.F_POINT) != 0) 
+					noFood = false;
+		end = end || noFood;
+		
 		for(int i=0; i < players.length; i++) {
 			
 			int nx = players[i].getPosX();
@@ -90,18 +95,12 @@ public abstract class Level implements Serializable {
 				{
 					players[i].addPoints(players[j].getPoints());
 					players[j].setPoints(0);
-					endGame();
+
+					end = true; //someone got eaten?, end the game
 				}
 			}
 		}
 		
-	}
-	
-	public void endGame()
-	{
-//		if(onLevelEnd != null)
-//			onLevelEnd.gameEnd();
-		end = true;
 	}
 	
 	// Determines whether this level is finished
@@ -111,107 +110,13 @@ public abstract class Level implements Serializable {
 	}
 	
 	// puts the points from all players into a point array
-	public int[] getPlayerPoints() {
-		int[] points = new int[players.length];
+	public void addPoints(int[] globalPoints) {
 		for(int i = 0; i < players.length; ++i)
-			points[i] = players[i].getPoints();
-		return points;
+			globalPoints[i] += players[i].getPoints();
 	}
 	
-	// det
-	public void showMessageBox(String message) {
-		this.message = message;
-	}
-	
-	public void hideMessageBox() {
-		message = null;
-	}
-	
-	
-	// draw the info screen, before starting
-	public void drawMessageBox(Graphics g, String msg, int x, int y, int width, int height) {
-		Graphics2D g2d = (Graphics2D) g;
-		
-		int padding = Math.min(width, height) / 12;
-		
-		x 		+= padding;
-		y 		+= padding;
-		width	-= padding * 2;
-		height 	-= padding * 2;
-		
-		int center_x = x + width  / 2;
-		int center_y = y + height / 2;
-		
-//		x = (int) g2d.getClipBounds().getCenterX() - x_bounds;
-//		y = (int) g2d.getClipBounds().getCenterY() - y_bounds;
-//		width  = x_bounds * 2;
-//		height = y_bounds * 2;
-		
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(x, y, width, height);
-		g2d.setColor(Color.BLUE);
-		g2d.setStroke(new BasicStroke(3));
-		g2d.drawRect(x, y, width, height);
-		
-		g2d.setColor(new Color(50,30,200));
-		Font font = new Font(Font.SERIF, Font.BOLD, Math.max(12, width/20));
-		g2d.setFont(font);
-		Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(msg, g2d);
-		g2d.drawString(msg, center_x - (int)bounds.getWidth()/2
-							  , center_y + (int)bounds.getHeight()/2);
-	}
-	
-	//eating animation controlling
-//	private long lastTime = System.currentTimeMillis();
-	
-	
-	
-	public void draw(Graphics g){
-		
-		/*
-		 * the necessary time data for the (infeasible) smooth mouth animation
-		 *
-		long currTime = System.currentTimeMillis();
-		double time   = currTime - lastTime;
-		lastTime      = currTime; */
-		
-		Graphics2D graphics = (Graphics2D) g;
-
-		int width  = (int) graphics.getClipBounds().getWidth();
-		int height = (int) graphics.getClipBounds().getHeight();
-
-		
-		graphics.setColor(Color.black);
-		graphics.fillRect(0, 0, width, height);	
-		
-		
-		//"Constants"
-		//Pointlist stuff
-		int pointlist_border_t = 3; //outer border of layout list
-		int font_s = Math.max(12,Math.min(width,height) / 16); //since I wanted the layout to "derive" from the fontsize the order got a bit ugly
-		
-
-		graphics.setFont( new Font("Arial", Font.PLAIN, font_s));
-		int font_h = graphics.getFontMetrics().getHeight();
-		int pointlist_w = graphics.getFontMetrics().stringWidth("00000") + font_h + 2 * pointlist_border_t;
-
-		width -= pointlist_w;
-		
-		//Field Constants
-		int wall_t = 2;  //wall thickness
-		int cell_s = Math.min((width  - wall_t) / field_w, 
-				              (height - wall_t) / field_h);
-		int pacman_s = (cell_s - wall_t) *1/2;  
-		int food_s =  pacman_s / 10;
-		
-
-		//everything is square so there is  a padding to the left or right
-		//when the drawing area is not a square
-		int pad_x = (width  - cell_s * field_w) / 2 + 10;
-		int pad_y = (height - cell_s * field_h) / 2;
-		
-				
-		//draw Walls
+	public void drawWalls(Graphics2D graphics,int pad_x, int pad_y, int cell_s, int wall_t)
+	{
 		graphics.setColor(Color.white);
 		graphics.setStroke(new BasicStroke(wall_t));
 
@@ -234,27 +139,10 @@ public abstract class Level implements Serializable {
 				if((field[i][j] & Constants.F_LEFT  ) != 0)
 					graphics.drawLine(x ,y ,x ,ye);
 			}
-	
-		boolean foodExists = false;
-		
-		//draw Food
-		graphics.setColor(Color.white);
-		if(food_s>0) 	
-			for(int i=0; i< field_w;i++)
-				for(int j=0;j<field_h;j++)
-					if((field[i][j] & Constants.F_POINT) != 0) {
-						graphics.fillRect(pad_x + i * cell_s + (cell_s-food_s)/2,
-								          pad_y + j * cell_s + (cell_s-food_s)/2, 
-								          food_s, food_s);
-						
-						foodExists = true;
-					}
-		
-		if(!foodExists) 
-			endGame();
-			
-		
-		//draw Pacmans  
+	}
+
+	public void drawPacmans(Graphics2D graphics,int pad_x, int pad_y, int cell_s,int pacman_s)
+	{
 		if(pacman_s>0) //to prevent crash from tiny window
 			for(int i=0; i < players.length; i++)
 				{
@@ -278,52 +166,46 @@ public abstract class Level implements Serializable {
 					
 					drawPacman(graphics,px,py,pacman_s,color,rotation, (int)mouth_angle);
 				}
-
-		//Draw Pointlist
-		int font_b = graphics.getFontMetrics().getAscent();
-		int pointlist_h = font_h * players.length;
-
-		int pointlist_x = pad_x + cell_s * field_w + pointlist_border_t;
-		int pointlist_y = (height - pointlist_h)/2;
-			
-		for(int i=0; i< players.length; i++)
-		{
-			String points = String.valueOf(players[i].getPoints());
-			int font_w = graphics.getFontMetrics().stringWidth(points);
-			int line_y = pointlist_y + font_h  * i;
-			
-			graphics.setColor(Color.white);
-			graphics.drawString(points, pointlist_x + pointlist_w - font_w - pointlist_border_t - 10, line_y + font_b);
-		
-			Color color = Constants.COLORS[players[i].getColor()];
-			
-			int rotation = Constants.RIGHT * 90;
-			
-			drawPacman(graphics, pointlist_x + pointlist_border_t, line_y, font_h, color, rotation, 90);
-		}
-		
-		// draw message box if applicable
-		
-		if(message != null)
-			drawMessageBox(graphics, message, pad_x, pad_y, cell_s * field_w, cell_s * field_h);		
 	}
 	
+	public void drawFood(Graphics2D graphics,int pad_x, int pad_y, int cell_s, int food_s)
+	{
+		graphics.setColor(Color.white);
+		if(food_s>0) 	
+			for(int i=0; i< field_w;i++)
+				for(int j=0;j<field_h;j++)
+					if((field[i][j] & Constants.F_POINT) != 0) 
+						graphics.fillRect(pad_x + i * cell_s + (cell_s-food_s)/2,
+								          pad_y + j * cell_s + (cell_s-food_s)/2, 
+								          food_s, food_s);
+	}
+
+	/* the necessary time data for the (infeasible) smooth mouth animation
+	private long lastTime = System.currentTimeMillis();
+	public void draw(Graphics g){
+		long currTime = System.currentTimeMillis();
+		double time   = currTime - lastTime;
+		lastTime      = currTime; */
+	
+	
 	//px,py as the topleft corner
-	private void drawPacman(Graphics graphics,int px,int py, int size, Color color, int rotation, int mouth_angle)
-	{            
-		
-		graphics.setColor(color);
-		graphics.fillArc(px, py, size,size, rotation + mouth_angle/2, 360 - mouth_angle);
-		
-		double eye_rotation = (rotation+ 90 + 4) * Math.PI/180.0 ;
-		int eye_size = size / 6  ;
-		int eye_dist = size * 7/18;
-		
-		int eyex = px + size/2 - eye_size/2 + (int)(Math.cos(eye_rotation) * eye_dist);
-		int eyey = py + size/2 - eye_size/2 - Math.abs( (int)(Math.sin(eye_rotation) * eye_dist) );
-											//the abs is here so that the eye is always "up"
-		graphics.setColor(Color.BLACK);
-		graphics.fillOval(eyex, eyey, size/6, size/6);
+	public void drawPacman(Graphics2D graphics,int px,int py, int size, Color color, int rotation, int mouth_angle)
+	{           
+		if(size>0)
+		{
+			graphics.setColor(color);
+			graphics.fillArc(px, py, size,size, rotation + mouth_angle/2, 360 - mouth_angle);
+			
+			double eye_rotation = (rotation+ 90 + 4) * Math.PI/180.0 ;
+			int eye_size = size / 6  ;
+			int eye_dist = size * 7/18;
+			
+			int eyex = px + size/2 - eye_size/2 + (int)(Math.cos(eye_rotation) * eye_dist);
+			int eyey = py + size/2 - eye_size/2 - Math.abs( (int)(Math.sin(eye_rotation) * eye_dist) );
+												//the abs is here so that the eye is always "up"
+			graphics.setColor(Color.BLACK);
+			graphics.fillOval(eyex, eyey, size/6, size/6);
+		}
 	}
 
 	
@@ -331,4 +213,15 @@ public abstract class Level implements Serializable {
 		return this.players.length;
 	}
 	
+	public int getField_w() {
+		return field_w;
+	}
+
+	public int getField_h() {
+		return field_h;
+	}
+
+	public Player[] getPlayers() {
+		return players;
+	}
 }

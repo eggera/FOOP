@@ -79,4 +79,11 @@ class Player implements Serializable {
 	public double getMouthAngle() {
 		return mouth_angle;
 	}
+
+	@Override
+	public String toString() {
+		return Integer.toString(points);
+	}
+	
+	
 }
