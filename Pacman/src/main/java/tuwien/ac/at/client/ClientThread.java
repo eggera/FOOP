@@ -83,7 +83,7 @@ public class ClientThread implements Runnable, KeyListener{
 		}
 		
 		if(response.startsWith("running")) {
-			game.showMessageBox("Game is already running, better luck next time.");
+			game.showMessageBox("Game is already running, sorry");
 			return;
 		}
 		
