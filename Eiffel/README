@@ -14,4 +14,15 @@ Zu lösen mit Eiffel und dem Eiffelstudio
 
 http://www.eiffel.com/products/studio/
 
+Started with ACCOUNT
 
+added class ACCOUNT
+added properties in ACCOUNT
+added require (preconditions)
+added ensure  (postconditions)
+
+todo's see class ACCOUNT file
+
+altered APPLICATION
+
+enable condition tests by removing comments
