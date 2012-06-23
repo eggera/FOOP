@@ -18,7 +18,7 @@ inherit
 		make
 
 	feature
-		make(name: STRING number: INTEGER balance, maxAmount: DOUBLE )
+		make(owner: PERSON number: INTEGER balance, maxAmount: DOUBLE )
 		require
 			--maxAmount has to be negativ
 			maxAmountLessThenZero: maxAmount < 0
@@ -26,7 +26,7 @@ inherit
 			keepBalance: balance >= maxAmount
 		do
 			--make constructor
-			setName(name)
+			setAccOwner(owner)
 			setAccNumber(number)
 			setMaxAmount(maxAmount)
 			setBalance(balance)
@@ -37,11 +37,9 @@ inherit
 
 	feature
 		--access
-		owner_name: 	STRING 	assign setName
+		-- assigner command for direct assignment of variables
+		acc_owner:		PERSON 	assign setAccOwner
 		acc_number:		INTEGER assign setAccNumber
-
-		--TODO add acc_signer class PERSON
-		--TODO change name to PERSON etc.
 
 		acc_balance:	DOUBLE  assign setBalance
 		max_amount:		DOUBLE  assign setMaxAmount
@@ -49,10 +47,10 @@ inherit
 		--TODO limit and such
 	feature
 		--element change
-		setName(name: STRING)
+		setAccOwner(owner: PERSON)
 		do
 			--setName
-			owner_name := name
+			acc_owner := owner
 		end
 
 		setAccNumber(number: INTEGER)
@@ -79,6 +77,6 @@ inherit
 		--output
 		out: STRING
 		do
-			Result := "ACCOUNT [Name: " + owner_name + ", Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", Account Maximum: " + max_amount.out + "]"
+			Result := "ACCOUNT [Name: " + acc_owner.name + ", Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", Account Maximum: " + max_amount.out + "]"
 		end
 end

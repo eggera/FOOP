@@ -1,5 +1,0 @@
-Compiler version: 7.0.8.8074 GPL Edition - linux-x86
-Type: Quick_melt
-batch mode: False
-new session: True
-starting date: 06/12/2012 7:46:53.826 PM
