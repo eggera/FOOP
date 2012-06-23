@@ -14,25 +14,35 @@ inherit
 		end
 
 	create
-		--preprcessor for function
+		--preprocessor for function
 		make
 
 	feature
-		make(owner: PERSON number: INTEGER balance, maxAmount: DOUBLE )
+		make(owner: PERSON number: INTEGER balance, maxDepth: DOUBLE )
+
 		require
-			--maxAmount has to be negativ
-			maxAmountLessThenZero: maxAmount < 0
-			--no credit under maxAmount
-			keepBalance: balance >= maxAmount
+			--maxDepth has to be negativ
+			maxDepthLessThenZero: maxDepth < 0
+			--no credit under maxDepth
+			keepBalance: balance >= maxDepth
+	--	local
+	--		my_array : ARRAY[INTEGER]
+	--		my_list:	LINKED_LIST[PERSON]
+
 		do
 			--make constructor
 			setAccOwner(owner)
 			setAccNumber(number)
-			setMaxAmount(maxAmount)
+			setMaxDepth(maxDepth)
 			setBalance(balance)
+
+	--		create my_array.make_empty
+	--		create my_list.make
+			create acc_signers.make
+			addAccSigner(owner)
 		ensure
-			forceSetMaxAmount: acc_balance = balance
-			forceSetBalance:   max_amount  = maxAmount
+			--forceSetBalance: acc_balance = balance
+			--forceSetMaxDepth:   max_depth  = maxDepth
 		end
 
 	feature
@@ -40,9 +50,10 @@ inherit
 		-- assigner command for direct assignment of variables
 		acc_owner:		PERSON 	assign setAccOwner
 		acc_number:		INTEGER assign setAccNumber
+		acc_signers:	LINKED_LIST[PERSON]
 
 		acc_balance:	DOUBLE  assign setBalance
-		max_amount:		DOUBLE  assign setMaxAmount
+		max_depth:		DOUBLE  assign setMaxDepth
 
 		--TODO limit and such
 	feature
@@ -59,11 +70,11 @@ inherit
 			acc_number := number
 		end
 
-		setMaxAmount(max: DOUBLE)
+		setMaxDepth(max: DOUBLE)
 		do
-			max_amount := max
+			max_depth := max
 		ensure
-			forceSetMaxAmount: max_amount = max
+			forceSetMaxAmount: max_depth = max
 		end
 
 		setBalance(balance: DOUBLE)
@@ -73,10 +84,22 @@ inherit
 			forceSetBalance: acc_balance = balance
 		end
 
+		addAccSigner(signer: PERSON)
+		do
+			acc_signers.extend(signer)
+		end
+
 	feature
 		--output
 		out: STRING
 		do
-			Result := "ACCOUNT [Name: " + acc_owner.name + ", Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", Account Maximum: " + max_amount.out + "]"
+			Result := "ACCOUNT [Signers: "
+			across acc_signers as signers
+
+			loop
+				Result := Result + signers.item.name + ", "
+			end
+
+			Result := Result + "Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", Account Maximum: " + max_depth.out + "]"
 		end
 end

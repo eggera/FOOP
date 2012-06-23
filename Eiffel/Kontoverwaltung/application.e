@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 
 
 			create acc1.make( student, 12345678 , 2000.00, -1000.00)
+			acc1.addaccsigner (pensionist)
 			print (acc1.out + "%N")
 			create acc2.make( pensionist, 12456788 , 2000.00, -1000.00)
 			print (acc2.out + "%N")
