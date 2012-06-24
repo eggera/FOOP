@@ -53,16 +53,18 @@ inherit
 
 	--access
 	feature
-		-- assigner command for direct assignment of variables
-		acc_owner:		PERSON 	assign setAccOwner
-		acc_number:		INTEGER assign setAccNumber
+		-- debug: assigner command for direct assignment of variables
+		-- acc_owner:		PERSON 	assign setAccOwner
+		-- acc_number:		INTEGER assign setAccNumber
+		acc_owner:		PERSON
+		acc_number:		INTEGER
 		acc_signers:	LINKED_LIST[PERSON]
 
 		acc_balance:	INTEGER
-		credit_line:	INTEGER  assign setCreditLine
+		credit_line:	INTEGER
 
-		credit_interest:DOUBLE assign setCreditInterest
-		debit_interest: DOUBLE assign setDebitInterest
+		credit_interest:DOUBLE
+		debit_interest: DOUBLE
 
 		--account limits
 		limits: ACCOUNT_LIMITS
@@ -89,24 +91,24 @@ inherit
 
 		setCreditLine(cLine: INTEGER)
 		require
-			cLine <= limits.min_credit_line
-			cLine >= limits.max_credit_line
+			belowMinCreditLine: cLine <= limits.min_credit_line
+			aboveMaxCreditLine: cLine >= limits.max_credit_line
 		do
 			credit_line := cLine
 		end
 
 		setCreditInterest(c_interest: DOUBLE)
 		require
-			c_interest >= limits.min_credit_interest
-			c_interest <= limits.max_credit_interest
+			aboveMinCreditInterest: c_interest >= limits.min_credit_interest
+			belowMaxCreditInterest: c_interest <= limits.max_credit_interest
 		do
 			credit_interest := c_interest
 		end
 
 		setDebitInterest(d_interest: DOUBLE)
 		require
-			d_interest >= limits.min_debit_interest
-			d_interest <= limits.max_debit_interest
+			aboveMinDebitInterest: d_interest >= limits.min_debit_interest
+			belowMaxDebitInterest: d_interest <= limits.max_debit_interest
 		do
 			debit_interest := d_interest
 		end
@@ -173,6 +175,12 @@ inherit
 
 
 invariant
-	balanceOK: acc_balance >= credit_line
+	balanceOK: 				acc_balance >= credit_line
+	belowMinCreditLine: 	credit_line <= limits.min_credit_line
+	aboveMaxCreditLine: 	credit_line >= limits.max_credit_line
+	aboveMinCreditInterest: credit_interest >= limits.min_credit_interest
+	belowMaxCreditInterest: credit_interest <= limits.max_credit_interest
+	aboveMinDebitInterest: 	debit_interest >= limits.min_debit_interest
+	belowMaxDebitInterest: 	debit_interest <= limits.max_debit_interest
 
 end

@@ -9,14 +9,17 @@ class
 
 inherit
 	PERSON
+		rename
+			make as make_person
+		end
 
 create
 	make
 
 feature
-	make (p_name: STRING)
+	make (pens_name: STRING)
 	do
-		name := p_name
+		make_person(pens_name)
 	end
 
 end

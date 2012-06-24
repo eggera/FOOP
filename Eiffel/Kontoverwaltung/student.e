@@ -9,18 +9,25 @@ class
 
 inherit
 	PERSON
-
---export {ANY} all end
+		rename
+			make as make_person
+		end
 
 create
 	make
 
 feature
-	make (s_name: STRING)
+	make (stud_name: STRING stud_matrNr: STRING)
+--	require else
 	do
-		name := s_name
+--		name := stud_name
+		make_person(stud_name)
+		matrNr := stud_matrNr
 	end
 
+--access
+feature
+	matrNr: STRING
 
 
 end
