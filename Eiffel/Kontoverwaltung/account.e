@@ -90,6 +90,9 @@ inherit
 		end
 
 		setCreditLine(cLine: INTEGER)
+		require
+			cLine <= limits.min_credit_line
+			cLine >= limits.max_credit_line
 		do
 			credit_line := cLine
 		end
