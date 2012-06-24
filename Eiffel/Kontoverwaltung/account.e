@@ -18,7 +18,7 @@ inherit
 		make
 
 	feature
-		make(owner: PERSON number: INTEGER balance, maxDepth: DOUBLE )
+		make(owner: PERSON number: INTEGER balance, maxDepth: INTEGER )
 
 		require
 			--maxDepth has to be negativ
@@ -52,10 +52,14 @@ inherit
 		acc_number:		INTEGER assign setAccNumber
 		acc_signers:	LINKED_LIST[PERSON]
 
-		acc_balance:	DOUBLE  assign setBalance
-		max_depth:		DOUBLE  assign setMaxDepth
+		acc_balance:	INTEGER  assign setBalance
+		max_depth:		INTEGER  assign setMaxDepth
 
 		--TODO limit and such
+
+		habenzins:		DOUBLE = 1.3
+		sollzins:		DOUBLE = 8.2
+
 	feature
 		--element change
 		setAccOwner(owner: PERSON)
@@ -70,23 +74,45 @@ inherit
 			acc_number := number
 		end
 
-		setMaxDepth(max: DOUBLE)
+		setMaxDepth(max: INTEGER)
 		do
 			max_depth := max
 		ensure
 			forceSetMaxAmount: max_depth = max
 		end
 
-		setBalance(balance: DOUBLE)
+		addAccSigner(signer: PERSON)
+		do
+			acc_signers.extend(signer)
+		end
+
+	feature
+		deposit(amount: INTEGER)
+		require
+			positiveAmount: amount >= 0
+		do
+			acc_balance := acc_balance + amount
+		ensure
+			depositOK: acc_balance = old acc_balance + amount
+		end
+
+		debit(amount: INTEGER)
+		require
+			positiveAmount: amount >= 0
+			allowed: acc_balance - amount >= max_depth
+		do
+			acc_balance := acc_balance - amount
+		ensure
+			debitOK: acc_balance = old acc_balance - amount
+		end
+
+	feature {NONE}
+		-- non public method to set the balance
+		setBalance(balance: INTEGER)
 		do
 			acc_balance := balance
 		ensure
 			forceSetBalance: acc_balance = balance
-		end
-
-		addAccSigner(signer: PERSON)
-		do
-			acc_signers.extend(signer)
 		end
 
 	feature
@@ -102,4 +128,8 @@ inherit
 
 			Result := Result + "Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", Account Maximum: " + max_depth.out + "]"
 		end
+
+invariant
+	balanceOK: acc_balance >= max_depth
+
 end
