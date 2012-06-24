@@ -20,6 +20,6 @@ feature {NONE} -- Initialization
 			test_class: TEST
 		do
 			create test_class
-			test_class.test
+			test_class.runTest
 		end
 end

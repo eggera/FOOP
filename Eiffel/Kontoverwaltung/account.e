@@ -1,6 +1,6 @@
 note
 	description: "Account contains information about a bank client"
-	author: "Raunig Stefan"
+	author: "Raunig Stefan, Andreas Egger"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -58,10 +58,8 @@ inherit
 		acc_number:		INTEGER assign setAccNumber
 		acc_signers:	LINKED_LIST[PERSON]
 
-		acc_balance:	INTEGER  assign setBalance
+		acc_balance:	INTEGER
 		credit_line:	INTEGER  assign setCreditLine
-
-		--TODO limit and such
 
 		credit_interest:DOUBLE assign setCreditInterest
 		debit_interest: DOUBLE assign setDebitInterest
@@ -119,6 +117,7 @@ inherit
 		deposit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
+			minimumAmount: 	amount >= limits.minimum_amount
 		do
 			acc_balance := acc_balance + amount
 		ensure
@@ -128,7 +127,8 @@ inherit
 		debit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
-			allowed: acc_balance - amount >= credit_line
+			minimumAmount: 	amount >= limits.minimum_amount
+			debitValid:		acc_balance - amount >= credit_line
 		do
 			acc_balance := acc_balance - amount
 		ensure
@@ -138,7 +138,8 @@ inherit
 		transfer(amount: INTEGER other_acc: ACCOUNT)
 		require
 			positiveAmount: amount >= 0
-			allowed: acc_balance - amount >= credit_line
+			minimumAmount: 	amount >= limits.minimum_amount
+			transferValid: 	acc_balance - amount >= credit_line
 		do
 			debit(amount)
 			other_acc.deposit(amount)

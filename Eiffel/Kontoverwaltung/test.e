@@ -8,7 +8,9 @@ class
 	TEST
 
 feature
-	test
+
+	-- test procedure
+	runTest
 	local
 		acc1: ACCOUNT
 		acc2: ACCOUNT
@@ -40,6 +42,7 @@ feature
 
 		print ("%N acc1 -> acc2 transfer, 2000 %N")
 		acc1.transfer (2000, acc2)
+		
 		print ("acc1 balance = " + acc1.acc_balance.out + "%N")
 		print ("acc2 balance = " + acc2.acc_balance.out + "%N")
 
