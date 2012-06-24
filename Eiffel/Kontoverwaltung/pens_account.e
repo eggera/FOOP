@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {PENS_ACCOUNT}."
-	author: ""
+	author: "Andreas Egger"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -27,8 +27,12 @@ feature
 	-- constructor
 	make(owner: PENSIONIST number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE)
 	do
-		make_account(owner, number, balance, creditLine, c_interest, d_interest)
+		create pens_limits
+		makeLimits(owner, number, balance, creditLine, c_interest, d_interest, pens_limits)
 	end
+
+feature
+	pens_limits: PENS_ACCOUNT_LIMITS
 
 feature
 	out: STRING

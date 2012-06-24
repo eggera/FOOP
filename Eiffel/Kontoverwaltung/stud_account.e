@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {STUD_ACCOUNT}."
-	author: ""
+	author: "Andreas Egger"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,7 +11,7 @@ inherit
 	ACCOUNT
 		rename
 			make as make_account
-			
+
 		export {NONE} addAccSigner
 
 		redefine
@@ -24,8 +24,14 @@ create
 feature
 	make(owner: STUDENT number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE)
 	do
-		make_account(owner, number, balance, creditLine, c_interest, d_interest)
+		create stud_limits
+		print ("stud limits: "+ stud_limits.mincreditline.out +", "+ stud_limits.maxCreditLine.out +"%N")
+		makeLimits(owner, number, balance, creditLine, c_interest, d_interest, stud_limits)
 	end
+
+--access
+feature
+	stud_limits: STUD_ACCOUNT_LIMITS
 
 feature
 	out: STRING
