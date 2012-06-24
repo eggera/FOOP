@@ -31,8 +31,9 @@ feature
 
 		create account.make (owner, 987654321, 1000, -1000, 1.4, 8.3)
 		create stud_account.make( student, 12345678 , 2000, -1000, 2.0, 8.3)
-		stud_account.addaccsigner (pensionist)
 		create pens_account.make( pensionist, 12456788 , 2000, -1000, 3.1, 10.2)
+
+		account.addAccSigner (pensionist)
 
 		print (account.out + "%N")
 		print (stud_account.out + "%N")
@@ -43,7 +44,7 @@ feature
 
 		print ("%N stud_account deposit, 1000 %N")
 		stud_account.deposit (1000)
-		
+
 		print ("stud_account balance = " + stud_account.acc_balance.out + "%N")
 		print ("pens_account balance = " + pens_account.acc_balance.out + "%N")
 
