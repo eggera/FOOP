@@ -79,6 +79,8 @@ inherit
 	--element change
 	feature
 		setAccOwner(owner: PERSON)
+		require
+			ownerNotVoid: owner /= Void
 		do
 			--setOwner
 			acc_owner := owner
@@ -91,6 +93,8 @@ inherit
 		end
 
 		addAccSigner(signer: PERSON)
+		require
+			signerNotVoid: signer /= Void
 		do
 			acc_signers.extend(signer)
 		end
@@ -184,9 +188,9 @@ invariant
 	balanceOK: 				acc_balance >= credit_line
 --	aboveMinCreditLine: 	credit_line <= acc_limits.minCreditLine
 --	belowMaxCreditLine: 	credit_line >= acc_limits.maxCreditLine
---	aboveMinCreditInterest: credit_interest >= acc_limits.minCreditInterest
---	belowMaxCreditInterest: credit_interest <= acc_limits.maxCreditInterest
---	aboveMinDebitInterest: 	debit_interest >= acc_limits.minDebitInterest
---	belowMaxDebitInterest: 	debit_interest <= acc_limits.maxDebitInterest
+	aboveMinCreditInterest: credit_interest >= acc_limits.minCreditInterest
+	belowMaxCreditInterest: credit_interest <= acc_limits.maxCreditInterest
+	aboveMinDebitInterest: 	debit_interest >= acc_limits.minDebitInterest
+	belowMaxDebitInterest: 	debit_interest <= acc_limits.maxDebitInterest
 
 end

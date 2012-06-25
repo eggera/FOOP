@@ -9,13 +9,15 @@ class
 
 inherit
 	ACCOUNT
-		rename
-			make as make_account
-
 		export {NONE} addAccSigner
 
 		redefine
-			out
+			make,
+			makeLimits,
+			out,
+			acc_owner,
+			setAccOwner,
+			addAccSigner
 	end
 
 
@@ -31,8 +33,58 @@ feature
 		makeLimits(owner, number, balance, creditLine, c_interest, d_interest, pens_limits)
 	end
 
+
+feature {NONE}
+
+	makeLimits(owner: PENSIONIST number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE limits: PENS_ACCOUNT_LIMITS)
+--	require
+--		--creditLine has to be negativ
+--		creditLineLessThenZero: creditLine < 0
+--		--no credit under creditLine
+--		keepBalance: balance >= creditLine
+--		--limit not Void
+--		limitNotVoid: limits /= Void
+	do
+		--make constructor
+
+--		print("limits: "+ limits.minCreditLine.out + " to "  + limits.maxCreditLine.out + "%N")
+		acc_limits := limits
+
+		setAccOwner(owner)
+		setAccNumber(number)
+		setCreditLine(creditLine)
+		setBalance(balance)
+		setCreditInterest(c_interest)
+		setDebitInterest(d_interest)
+
+		create acc_signers.make
+		addAccSigner(owner)
+
+	end
+
+
+--access
 feature
+	acc_owner: PENSIONIST
+
 	pens_limits: PENS_ACCOUNT_LIMITS
+
+
+--element change
+feature
+	setAccOwner(owner: PENSIONIST)
+	do
+		--setOwner
+		acc_owner := owner
+	end
+
+
+feature {NONE}
+	addAccSigner(signer: PENSIONIST)
+	once
+		acc_signers.extend (signer)
+	end
+
 
 feature
 	out: STRING
