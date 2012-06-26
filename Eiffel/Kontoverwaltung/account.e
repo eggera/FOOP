@@ -22,19 +22,27 @@ inherit
 	feature
 		make(owner: PERSON number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE)
 
+		do
+			create acc_limits
+			makeLimits (owner, number, balance, creditline, c_interest, d_interest, acc_limits)
+		end
+
+
+	feature {NONE}
+
+		makeLimits(owner: PERSON number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE limits: ACCOUNT_LIMITS)
 		require
 			--creditLine has to be negativ
 			creditLineLessThenZero: creditLine < 0
 			--no credit under creditLine
 			keepBalance: balance >= creditLine
-	--	local
-	--		my_array : ARRAY[INTEGER]
-	--		my_list:	LINKED_LIST[PERSON]
-
+			--limit not Void
+			limitNotVoid: limits /= Void
 		do
 			--make constructor
 
-			create limits
+	--		print("limits: "+ limits.minCreditLine.out + " to "  + limits.maxCreditLine.out + "%N")
+			acc_limits := limits
 
 			setAccOwner(owner)
 			setAccNumber(number)
@@ -46,8 +54,6 @@ inherit
 			create acc_signers.make
 			addAccSigner(owner)
 
-	--		create my_array.make_empty
-	--		create my_list.make
 		end
 
 
@@ -67,12 +73,14 @@ inherit
 		debit_interest: DOUBLE
 
 		--account limits
-		limits: ACCOUNT_LIMITS
+		acc_limits: 	ACCOUNT_LIMITS
 
 
 	--element change
 	feature
 		setAccOwner(owner: PERSON)
+		require
+			ownerNotVoid: owner /= Void
 		do
 			--setOwner
 			acc_owner := owner
@@ -85,30 +93,32 @@ inherit
 		end
 
 		addAccSigner(signer: PERSON)
+		require
+			signerNotVoid: signer /= Void
 		do
 			acc_signers.extend(signer)
 		end
 
 		setCreditLine(cLine: INTEGER)
 		require
-			belowMinCreditLine: cLine <= limits.min_credit_line
-			aboveMaxCreditLine: cLine >= limits.max_credit_line
+			aboveMinCreditLine: cLine <= -500
+			belowMaxCreditLine: cLine >= -10000
 		do
 			credit_line := cLine
 		end
 
 		setCreditInterest(c_interest: DOUBLE)
 		require
-			aboveMinCreditInterest: c_interest >= limits.min_credit_interest
-			belowMaxCreditInterest: c_interest <= limits.max_credit_interest
+			aboveMinCreditInterest: c_interest >= 1.0
+			belowMaxCreditInterest: c_interest <= 7.0
 		do
 			credit_interest := c_interest
 		end
 
 		setDebitInterest(d_interest: DOUBLE)
 		require
-			aboveMinDebitInterest: d_interest >= limits.min_debit_interest
-			belowMaxDebitInterest: d_interest <= limits.max_debit_interest
+			aboveMinDebitInterest: d_interest >= 3.0
+			belowMaxDebitInterest: d_interest <= 15.0
 		do
 			debit_interest := d_interest
 		end
@@ -119,7 +129,7 @@ inherit
 		deposit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= limits.minimum_amount
+			minimumAmount: 	amount >= 2
 		do
 			acc_balance := acc_balance + amount
 		ensure
@@ -129,7 +139,7 @@ inherit
 		debit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= limits.minimum_amount
+			minimumAmount: 	amount >= 2
 			debitValid:		acc_balance - amount >= credit_line
 		do
 			acc_balance := acc_balance - amount
@@ -140,7 +150,7 @@ inherit
 		transfer(amount: INTEGER other_acc: ACCOUNT)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= limits.minimum_amount
+			minimumAmount: 	amount >= 2
 			transferValid: 	acc_balance - amount >= credit_line
 		do
 			debit(amount)
@@ -176,11 +186,11 @@ inherit
 
 invariant
 	balanceOK: 				acc_balance >= credit_line
-	belowMinCreditLine: 	credit_line <= limits.min_credit_line
-	aboveMaxCreditLine: 	credit_line >= limits.max_credit_line
-	aboveMinCreditInterest: credit_interest >= limits.min_credit_interest
-	belowMaxCreditInterest: credit_interest <= limits.max_credit_interest
-	aboveMinDebitInterest: 	debit_interest >= limits.min_debit_interest
-	belowMaxDebitInterest: 	debit_interest <= limits.max_debit_interest
+	aboveMinCreditLine: 	credit_line <= -500
+	belowMaxCreditLine: 	credit_line >= -10000
+	aboveMinCreditInterest: credit_interest >= 1.0
+	belowMaxCreditInterest: credit_interest <= 7.0
+	aboveMinDebitInterest: 	debit_interest >= 3.0
+	belowMaxDebitInterest: 	debit_interest <= 15.0
 
 end

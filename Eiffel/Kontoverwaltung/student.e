@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {STUDENT}."
-	author: ""
+	author: "Andreas Egger"
 	date: "$Date$"
 	revision: "$Revision$"
 
