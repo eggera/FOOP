@@ -7,6 +7,7 @@ note
 class
 	TEST
 
+
 feature
 
 	-- test procedure
@@ -29,11 +30,13 @@ feature
 		create student.make ("student1", "0498432")
 		create pensionist.make ("pensionist1")
 
-		create account.make (owner, 987654321, 1000, -10000, 1.4, 8.3)
+		create account.make ( owner, 987654321, 1000, -10000, 1.4, 8.3)
 		create stud_account.make( student, 12345678 , 2000, -1000, 2.0, 8.3)
 		create pens_account.make( pensionist, 12456788 , 2000, -1000, 3.1, 10.2)
 
 		account.addAccSigner (pensionist)
+
+
 
 		print (account.out + "%N%N")
 		print (stud_account.out + "%N%N")

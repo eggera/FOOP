@@ -37,17 +37,10 @@ feature
 feature {NONE}
 
 	makeLimits(owner: PENSIONIST number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE limits: PENS_ACCOUNT_LIMITS)
---	require
---		--creditLine has to be negativ
---		creditLineLessThenZero: creditLine < 0
---		--no credit under creditLine
---		keepBalance: balance >= creditLine
---		--limit not Void
---		limitNotVoid: limits /= Void
+	
 	do
 		--make constructor
 
---		print("limits: "+ limits.minCreditLine.out + " to "  + limits.maxCreditLine.out + "%N")
 		acc_limits := limits
 
 		setAccOwner(owner)
@@ -81,7 +74,7 @@ feature
 
 feature {NONE}
 	addAccSigner(signer: PENSIONIST)
-	once
+	do
 		acc_signers.extend (signer)
 	end
 

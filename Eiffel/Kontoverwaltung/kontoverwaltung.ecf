@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="Kontoverwaltung" uuid="62C67F4F-1BF2-48D1-9B6F-D438D0983F58">
-	<target name="Kontoverwaltung">
-		<root feature="make" class="APPLICATION"/>
-		<option warning="true">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="kontoverwaltung" uuid="62C67F4F-1BF2-48D1-9B6F-D438D0983F58">
+	<target name="kontoverwaltung">
+		<root class="APPLICATION" feature="make"/>
+		<option warning="true" is_attached_by_default="false" syntax="transitional">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
-		<precompile name="base_pre" location="$ISE_PRECOMP/base.ecf"/>
-		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf"/>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<cluster name="kontoverwaltung" location=".\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
+			<class_option class="ACCOUNT">
+				<assertions/>
+			</class_option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
-				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
+				<exclude>/.svn$</exclude>
 			</file_rule>
 		</cluster>
 	</target>
-	<target name="Kontoverwaltung_dotnet" extends="Kontoverwaltung">
+	<target name="kontoverwaltung_dotnet" extends="kontoverwaltung">
 		<setting name="msil_generation" value="true"/>
 	</target>
 </system>

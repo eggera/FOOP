@@ -36,13 +36,6 @@ feature
 feature {NONE}
 
 	makeLimits(owner: STUDENT number: INTEGER balance, creditLine: INTEGER c_interest, d_interest: DOUBLE limits: STUD_ACCOUNT_LIMITS)
---	require
---		--creditLine has to be negativ
---		creditLineLessThenZero: creditLine < 0
---		--no credit under creditLine
---		keepBalance: balance >= creditLine
---		--limit not Void
---		limitNotVoid: limits /= Void
 	do
 		--make constructor
 
@@ -78,7 +71,7 @@ feature
 
 feature {NONE}
 	addAccSigner(signer: STUDENT)
-	once
+	do
 		acc_signers.extend (signer)
 	end
 
