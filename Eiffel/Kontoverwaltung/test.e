@@ -51,7 +51,7 @@ feature
 		accounts.extend (stud_account)
 		accounts.extend (pens_account)
 
-		create student_p.make ("student2", 0394875)
+		create student_p.make ("student2", "0394875")
 		owner := student_p
 
 		print( accounts.at (1).acc_owner.name )
@@ -77,6 +77,8 @@ feature
 	end
 
 
+-- this method is used to subjectively test the runtime of this class
+-- see the difference when turning assertions off and on (via the project properties)
 	testAccounts
 	local
         j, i : INTEGER
