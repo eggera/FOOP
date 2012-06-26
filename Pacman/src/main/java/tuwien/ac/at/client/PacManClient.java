@@ -16,12 +16,29 @@ import main.java.tuwien.ac.at.server.PacManServer;
 public class PacManClient {
 
 	private static ClientThread clientThread;
-	
+
 	/**
 	 * @param serverIP, port
 	 */
 	public static void main(String[] args) {
+		
+		String adress = "127.0.0.1";
+		int port = 10000;
 		//connect to server
+		try
+		{
+			if(args.length > 0)
+				adress = args[0];
+			if(args.length > 1)
+				port = Integer.parseInt(args[1]);		
+		}
+		catch(Exception e)
+		{
+			System.out.println("Parameter parsing failed using:");
+		}
+		System.out.println("Adress: " + adress);
+		System.out.println("Port: " + port);
+		
 		
 		JFrame w = new JFrame();
 
@@ -36,9 +53,7 @@ public class PacManClient {
         
 		try {
 			
-			clientThread = new ClientThread(game,
-								PacManServer.SERVER_ADRESS, 
-								PacManServer.SERVER_PORT );
+			clientThread = new ClientThread(game,	adress, port );
 
 			w.addKeyListener(clientThread);
 			

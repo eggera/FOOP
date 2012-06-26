@@ -83,7 +83,7 @@ public abstract class Level implements Serializable {
 					noFood = false;
 		end = end || noFood;
 		
-		for(int i=0; i < players.length; i++) {
+		for(int i=0; i < players.length && players.length > 0; i++) {
 			
 			int nx = players[i].getPosX();
 			int ny = players[i].getPosY();
