@@ -1,9 +1,30 @@
 
 
-drag and drop the .st file into squeak.
+go to unpacked squeak directory
+(i.e. /home/blackstar/Dropbox/uni/foop/install-squeak/Squeak-4.3-All-in-One.app)
+
+run ./squeak.sh
 
 
-then do in a workspace:
+Then go to Projects/New Project/New Morphic Project
+
+
+Go to Tools/File List 
+then find the Pacman.st file
+and execute command  fileIn entire file
+
+
+OR 
+just drag and drop the .st file into squeak. ;)
+
+
+open a workspace: Tools/Workspace
+
+then type:
 
 v := PacmanMain new bounds: (40@40 extent: 300@300).
 v openInWorld.
+
+Go to each line, and execute Alt+P (or, select "print it" from the menu)
+
+Enjoy!
