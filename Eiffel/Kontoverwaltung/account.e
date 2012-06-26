@@ -101,24 +101,24 @@ inherit
 
 		setCreditLine(cLine: INTEGER)
 		require
-			aboveMinCreditLine: cLine <= acc_limits.minCreditLine
-			belowMaxCreditLine: cLine >= acc_limits.maxCreditLine
+			aboveMinCreditLine: cLine <= -500
+			belowMaxCreditLine: cLine >= -10000
 		do
 			credit_line := cLine
 		end
 
 		setCreditInterest(c_interest: DOUBLE)
 		require
-			aboveMinCreditInterest: c_interest >= acc_limits.minCreditInterest
-			belowMaxCreditInterest: c_interest <= acc_limits.maxCreditInterest
+			aboveMinCreditInterest: c_interest >= 1.0
+			belowMaxCreditInterest: c_interest <= 7.0
 		do
 			credit_interest := c_interest
 		end
 
 		setDebitInterest(d_interest: DOUBLE)
 		require
-			aboveMinDebitInterest: d_interest >= acc_limits.minDebitInterest
-			belowMaxDebitInterest: d_interest <= acc_limits.maxDebitInterest
+			aboveMinDebitInterest: d_interest >= 3.0
+			belowMaxDebitInterest: d_interest <= 15.0
 		do
 			debit_interest := d_interest
 		end
@@ -129,7 +129,7 @@ inherit
 		deposit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= acc_limits.minimumAmount
+			minimumAmount: 	amount >= 2
 		do
 			acc_balance := acc_balance + amount
 		ensure
@@ -139,7 +139,7 @@ inherit
 		debit(amount: INTEGER)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= acc_limits.minimumAmount
+			minimumAmount: 	amount >= 2
 			debitValid:		acc_balance - amount >= credit_line
 		do
 			acc_balance := acc_balance - amount
@@ -150,7 +150,7 @@ inherit
 		transfer(amount: INTEGER other_acc: ACCOUNT)
 		require
 			positiveAmount: amount >= 0
-			minimumAmount: 	amount >= acc_limits.minimumAmount
+			minimumAmount: 	amount >= 2
 			transferValid: 	acc_balance - amount >= credit_line
 		do
 			debit(amount)
@@ -186,11 +186,11 @@ inherit
 
 invariant
 	balanceOK: 				acc_balance >= credit_line
---	aboveMinCreditLine: 	credit_line <= acc_limits.minCreditLine
---	belowMaxCreditLine: 	credit_line >= acc_limits.maxCreditLine
-	aboveMinCreditInterest: credit_interest >= acc_limits.minCreditInterest
-	belowMaxCreditInterest: credit_interest <= acc_limits.maxCreditInterest
-	aboveMinDebitInterest: 	debit_interest >= acc_limits.minDebitInterest
-	belowMaxDebitInterest: 	debit_interest <= acc_limits.maxDebitInterest
+	aboveMinCreditLine: 	credit_line <= -500
+	belowMaxCreditLine: 	credit_line >= -10000
+	aboveMinCreditInterest: credit_interest >= 1.0
+	belowMaxCreditInterest: credit_interest <= 7.0
+	aboveMinDebitInterest: 	debit_interest >= 3.0
+	belowMaxDebitInterest: 	debit_interest <= 15.0
 
 end

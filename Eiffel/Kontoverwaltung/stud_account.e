@@ -20,7 +20,13 @@ inherit
 			out,
 			acc_owner,
 			setAccOwner,
-			addAccSigner
+			addAccSigner,
+			deposit,
+			debit,
+			transfer,
+			setCreditLine,
+			setCreditInterest,
+			setDebitInterest
 	end
 
 create
@@ -54,34 +60,84 @@ feature {NONE}
 
 	end
 
---access
-feature
-	acc_owner: STUDENT
+	--access
+	feature
+		acc_owner: STUDENT
 
-	stud_limits: STUD_ACCOUNT_LIMITS
+		stud_limits: STUD_ACCOUNT_LIMITS
 
---element change
-feature
-	setAccOwner(owner: STUDENT)
-	do
-		--setOwner
-		acc_owner := owner
-	end
+	--element change
+	feature
+		setAccOwner(owner: STUDENT)
+		do
+			--setOwner
+			acc_owner := owner
+		end
+
+		setCreditLine(cLine: INTEGER)
+		require else
+			aboveMinCreditLine: cLine <= -200
+			belowMaxCreditLine: cLine >= -2000
+		do
+			credit_line := cLine
+		end
+
+		setCreditInterest(c_interest: DOUBLE)
+		require else
+			aboveMinCreditInterest: c_interest >= 1.0
+			belowMaxCreditInterest: c_interest <= 5.0
+		do
+			credit_interest := c_interest
+		end
+
+		setDebitInterest(d_interest: DOUBLE)
+		require else
+			aboveMinDebitInterest: d_interest >= 2.0
+			belowMaxDebitInterest: d_interest <= 12.0
+		do
+			debit_interest := d_interest
+		end
 
 
-feature {NONE}
-	addAccSigner(signer: STUDENT)
-	do
-		acc_signers.extend (signer)
-	end
+
+	-- account movements
+	feature
+		deposit(amount: INTEGER)
+		require else
+			minimumAmount: 	amount >= 1
+		do
+			acc_balance := acc_balance + amount
+		end
+
+		debit(amount: INTEGER)
+		require else
+			minimumAmount: 	amount >= 1
+		do
+			acc_balance := acc_balance - amount
+		end
+
+		transfer(amount: INTEGER other_acc: ACCOUNT)
+		require else
+			minimumAmount: 	amount >= 1
+		do
+			debit(amount)
+			other_acc.deposit(amount)
+		end
+
+
+	feature {NONE}
+		addAccSigner(signer: STUDENT)
+		do
+			acc_signers.extend (signer)
+		end
 
 
 
-feature
-	out: STRING
-	do
-		Result := "STUDENT ACCOUNT [Owner: " + acc_owner.name + ", Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", "
-		Result := Result + "Credit Line: " + credit_line.out + ", Credit Interest: " + credit_interest.out + ", Debit Interest: " + debit_interest.out + "]"
-	end
+	feature
+		out: STRING
+		do
+			Result := "STUDENT ACCOUNT [Owner: " + acc_owner.name + ", Account Number: " + acc_number.out + ", Account Balance: " + acc_balance.out + ", "
+			Result := Result + "Credit Line: " + credit_line.out + ", Credit Interest: " + credit_interest.out + ", Debit Interest: " + debit_interest.out + "]"
+		end
 
 end
